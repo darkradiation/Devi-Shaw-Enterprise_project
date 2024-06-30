@@ -1,0 +1,25 @@
+import Table from "../../ui/Table";
+import StockRow from "./StockRow";
+import { useStock } from "./useStock";
+import Spinner from "../../ui/Spinner";
+
+function StockTable() {
+  const { isLoadingStock, stock } = useStock();
+  if (isLoadingStock) return <Spinner />;
+  return (
+    <Table columns="2fr 5fr 3fr 1fr">
+      <Table.Header>
+        <div>Item</div>
+        <div>Price</div>
+        <div>quantity</div>
+        <div></div>
+      </Table.Header>
+      <Table.Body
+        data={stock}
+        render={(item) => <StockRow item={item} key={item.id} />}
+      />
+    </Table>
+  );
+}
+
+export default StockTable;
