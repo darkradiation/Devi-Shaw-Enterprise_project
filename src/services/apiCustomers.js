@@ -50,25 +50,35 @@ export async function addCustomer({ new_customer }) {
   console.log(new_customer.owner_picture);
   console.log(new_customer.store_picture);
 
+  // if (1) return null;
+
   const hasOwnerPicPath = new_customer.owner_picture?.startsWith?.(supabaseUrl);
+  console.log(hasOwnerPicPath);
 
   const ownerPicName = `${Math.random()}-${
     new_customer.owner_picture?.name
   }`.replaceAll("/", "");
+  console.log(ownerPicName);
 
   const ownerPicPath = hasOwnerPicPath
     ? new_customer.owner_picture
     : `${supabaseUrl}/storage/v1/object/public/customer_owner_pictures/${ownerPicName}`;
+  console.log(ownerPicPath);
 
   const hasStorePicPath = new_customer.store_picture?.startsWith?.(supabaseUrl);
+  console.log(hasStorePicPath);
 
   const storePicName = `${Math.random()}-${
     new_customer.store_picture?.name
   }`.replaceAll("/", "");
+  console.log(storePicName);
 
   const storePicPath = hasStorePicPath
     ? new_customer.store_picture
     : `${supabaseUrl}/storage/v1/object/public/customer_store_pictures/${storePicName}`;
+  console.log(storePicPath);
+
+  // if (1) return null;
 
   const { data, error } = await supabase
     .from("customers")

@@ -19,6 +19,7 @@ function SchemeTable() {
 
   const scheme_type = searchParams.get("scheme_type") || "schemes_near";
   const schemes = scheme_type === "schemes_near" ? schemes_near : schemes_far;
+  if (schemes.length === 0) return null;
 
   const scheme_item_id = searchParams.get("scheme_item_id") || "1";
   const schemeIndex = schemes.findIndex(
@@ -28,7 +29,7 @@ function SchemeTable() {
   console.log(schemes);
   console.log(scheme_item_id, schemeIndex, scheme);
   // return null;
-  const scheme_item_name = scheme.stock.item_name;
+  const scheme_item_name = scheme?.stock.item_name;
   // console.log(schemes);
 
   return (

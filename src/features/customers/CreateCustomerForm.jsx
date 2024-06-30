@@ -33,9 +33,9 @@ const Label = styled.label`
 `;
 
 const default_store_pic =
-  "https://btudmhxamelonucdbupr.supabase.co/storage/v1/object/public/customer_store_pictures/0.38892795734812036-default_store_image.jpg";
+  "https://nnfnobdpdtdimlugwmig.supabase.co/storage/v1/object/public/customer_store_pictures/0.38892795734812036-default_store_image.jpg";
 const default_owner_pic =
-  "https://btudmhxamelonucdbupr.supabase.co/storage/v1/object/public/customer_owner_pictures/0.034979561436823126-default_store_owner_image.jpeg";
+  "https://nnfnobdpdtdimlugwmig.supabase.co/storage/v1/object/public/customer_owner_pictures/0.034979561436823126-default_store_owner_image.jpeg";
 
 function CreateCustomerForm({ onCloseModal }) {
   const [routeId, setRouteId] = useState("1");
@@ -97,7 +97,7 @@ function CreateCustomerForm({ onCloseModal }) {
 
     delete new_customer["routes"];
 
-    // console.log(new_customer);
+    console.log(new_customer);
     addCustomer({ new_customer });
     onCloseModal();
   }
