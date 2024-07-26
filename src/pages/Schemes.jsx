@@ -1,4 +1,4 @@
-import { FaBoxOpen } from "react-icons/fa6";
+import { FaBoxOpen, FaPlus } from "react-icons/fa6";
 import SchemeTable from "../features/schemes/SchemeTable";
 import ButtonIcon from "../ui/ButtonIcon";
 import Filter from "../ui/Filter";
@@ -8,24 +8,44 @@ import Modal from "../ui/Modal";
 import Row from "../ui/Row";
 import CreateNewScheme from "../features/schemes/CreateNewScheme";
 import SchemeTableOperations from "../features/schemes/SchemeTableOperations";
+import styled from "styled-components";
+
+const Stacked = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
 
 function Schemes() {
   return (
     <Menus>
       <Row type="horizontal">
         <Heading as="h4">Schemes</Heading>
-        <div>
-          <Modal>
-            <Modal.Open opens="refillStock">
-              <ButtonIcon>
-                <FaBoxOpen />
-              </ButtonIcon>
-            </Modal.Open>
-            <Modal.Window name="refillStock">
-              <CreateNewScheme />
-            </Modal.Window>
-          </Modal>
-        </div>
+        <Stacked>
+          <Row type="horizontal">
+            <Filter
+              filterField="scheme_type"
+              options={[
+                { value: "schemes_1", label: "1" },
+                { value: "schemes_2", label: "2" },
+                { value: "schemes_3", label: "3" },
+              ]}
+            />
+          </Row>
+          <div>
+            <Modal>
+              <Modal.Open opens="refillStock">
+                <ButtonIcon>
+                  {/* <FaBoxOpen /> */}
+                  <FaPlus />
+                </ButtonIcon>
+              </Modal.Open>
+              <Modal.Window name="refillStock">
+                <CreateNewScheme />
+              </Modal.Window>
+            </Modal>
+          </div>
+        </Stacked>
       </Row>
 
       <SchemeTableOperations />

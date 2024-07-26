@@ -13,8 +13,6 @@ import CreateOrderItem from "./CreateOrderItem";
 
 import { useCustomers } from "../customers/useCustomers";
 import { useStock } from "../stock/useStock";
-import { useSchemesNear } from "../schemes/useSchemesNear";
-import { useSchemesFar } from "../schemes/useSchemesFar";
 import { useAddOrder } from "./useAddOrder";
 
 //                               2024-05-23T07:44:27+00:00
@@ -168,7 +166,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
         extraCosts
       ).toFixed(2)
     );
-    console.log("order after calculating order item values", modifiedOrder);
+    // console.log("order after calculating order item values", modifiedOrder);
     setNewOrder(modifiedOrder);
   }
 

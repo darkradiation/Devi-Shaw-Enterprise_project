@@ -17,16 +17,21 @@ import CustomerDetails from "../customers/CustomerDetails";
 import { useDeleteOrder } from "./useDeleteOrder";
 
 const StyledOrderDetailsComponent = styled.div`
-  width: 75vw;
+  /* width: 75vw; */
+  width: 100%;
   height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.2rem;
+
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-width: none;
 `;
 
 const HeadingBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -37,7 +42,7 @@ const HeadingBox = styled.div`
 `;
 
 const DataBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -48,7 +53,7 @@ const DataBox = styled.div`
 `;
 
 const PricingBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-grey-200);
@@ -84,8 +89,22 @@ const PriceItem = styled.div`
   }
 `;
 
+const PaymentItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  & div:first-child {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  & div:last-child {
+    font-size: 1.4rem;
+    padding: 0 1.5rem;
+  }
+`;
+
 const DateBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-grey-200);
@@ -95,7 +114,7 @@ const DateBox = styled.div`
 `;
 
 const IconBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
@@ -191,6 +210,8 @@ function OrderDetails({ order }) {
     is_delivered,
     is_paid,
     bill_value,
+    payments,
+    outstanding_payment,
     customers: {
       store_name,
       owner_name,
@@ -364,6 +385,23 @@ function OrderDetails({ order }) {
           <div>{profit}</div>
         </PriceItem>
       </PricingBox>
+
+      {payments && (
+        <PricingBox>
+          {payments.map((payment, index) => (
+            <PaymentItem key={index}>
+              <div>{format(payment.date, "MMM dd,yyyy")}</div>
+              <div>{payment.amount}</div>
+            </PaymentItem>
+          ))}
+          {outstanding_payment !== 0 && (
+            <PaymentItem>
+              <div>Due</div>
+              <div>{outstanding_payment}</div>
+            </PaymentItem>
+          )}
+        </PricingBox>
+      )}
 
       <DateBox>
         <Stacked>

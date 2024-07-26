@@ -59,7 +59,7 @@ function RefillStockForm({ onCloseModal }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(refillData);
+    // console.log(refillData);
     refillStock(refillData);
     onCloseModal();
   };

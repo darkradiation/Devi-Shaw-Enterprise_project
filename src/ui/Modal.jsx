@@ -6,16 +6,20 @@ import { useOutsideClick } from "../hooks/useOutsideClick";
 
 const StyledModal = styled.div`
   position: fixed;
+  width: 95%;
+  max-width: 35rem;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--color-grey-0);
+  border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 3.2rem 4rem;
+  padding: 3.2rem 1rem;
   transition: all 0.5s;
 
   overflow-y: scroll;
+  scrollbar-width: none;
 `;
 
 const Overlay = styled.div`

@@ -20,7 +20,7 @@ function EditStockItem({ item, onCloseModal }) {
     mrp_per_pc,
     item_name,
     buying_price_per_pt,
-    selling_price_per_pt: { near: selling_price_near, far: selling_price_far },
+    base_selling_price_per_pt,
     available_stock: { pt: available_pt, pcs: available_pcs },
   } = item;
 
@@ -28,8 +28,7 @@ function EditStockItem({ item, onCloseModal }) {
   const defaultQuantityPerPt = quantity_per_pt;
   const defaultMrpPerPc = mrp_per_pc;
   const defaultBuyingPrice = buying_price_per_pt;
-  const defaultSellingPriceNear = selling_price_near;
-  const defaultSellingPriceFar = selling_price_far;
+  const defaultSellingPrice = base_selling_price_per_pt;
   const defaultAvailablePt = available_pt;
   const defaultAvailablePcs = available_pcs;
 
@@ -45,47 +44,66 @@ function EditStockItem({ item, onCloseModal }) {
     quantity_per_pt,
     mrp_per_pc,
     buying_price,
-    selling_price_near,
-    selling_price_far,
+    selling_price,
     available_pt,
     available_pcs,
   }) {
     if (
       item_name === defaultItemName &&
-      buying_price === defaultBuyingPrice &&
-      selling_price_near === defaultSellingPriceNear &&
-      selling_price_far === defaultSellingPriceFar &&
-      available_pt === defaultAvailablePt &&
-      available_pcs === defaultAvailablePcs
+      Number(quantity_per_pt) === defaultQuantityPerPt &&
+      Number(mrp_per_pc) === defaultMrpPerPc &&
+      Number(buying_price) === defaultBuyingPrice &&
+      Number(selling_price) === defaultSellingPrice &&
+      Number(available_pt) === defaultAvailablePt &&
+      Number(available_pcs) === defaultAvailablePcs
     ) {
+      console.log("No change done");
       onCloseModal();
       return;
     }
 
-    const buying_price_per_pc = (buying_price / quantity_per_pt).toFixed(2);
-    const selling_price_near_per_pc = (
-      selling_price_near / quantity_per_pt
+    function checkValueChange(fieldName, defaultValue, newValue) {
+      if (defaultValue !== newValue) {
+        console.log(`${fieldName} changed`, defaultValue, newValue);
+      }
+    }
+    checkValueChange("Item name", defaultItemName, item_name);
+    checkValueChange(
+      "Quantity per pt",
+      defaultQuantityPerPt,
+      Number(quantity_per_pt)
+    );
+    checkValueChange("Mrp per pc", defaultMrpPerPc, Number(mrp_per_pc));
+    checkValueChange("Buying price", defaultBuyingPrice, Number(buying_price));
+    checkValueChange(
+      "Selling price",
+      defaultSellingPrice,
+      Number(selling_price)
+    );
+    checkValueChange("Available pt", defaultAvailablePt, Number(available_pt));
+    checkValueChange(
+      "Available pcs",
+      defaultAvailablePcs,
+      Number(available_pcs)
+    );
+
+    const buying_price_per_pc = (
+      Number(buying_price) / Number(quantity_per_pt)
     ).toFixed(2);
-    const selling_price_far_per_pc = (
-      selling_price_far / quantity_per_pt
+    const base_selling_price_per_pc = (
+      Number(selling_price) / Number(quantity_per_pt)
     ).toFixed(2);
 
     const updated_stock = {
       id,
       item_name,
-      quantity_per_pt,
-      buying_price_per_pt: buying_price,
-      selling_price_per_pt: {
-        near: selling_price_near,
-        far: selling_price_far,
-      },
-      buying_price_per_pc,
-      selling_price_per_pc: {
-        near: selling_price_near_per_pc,
-        far: selling_price_far_per_pc,
-      },
-      mrp_per_pc,
-      available_stock: { pt: available_pt, pcs: available_pcs },
+      quantity_per_pt: Number(quantity_per_pt),
+      buying_price_per_pt: Number(buying_price),
+      base_selling_price_per_pt: Number(selling_price),
+      buying_price_per_pc: Number(buying_price_per_pc),
+      base_selling_price_per_pc: Number(base_selling_price_per_pc),
+      mrp_per_pc: Number(mrp_per_pc),
+      available_stock: { pt: Number(available_pt), pcs: Number(available_pcs) },
     };
 
     console.log(updated_stock);
@@ -155,31 +173,13 @@ function EditStockItem({ item, onCloseModal }) {
         />
       </FormRow>
 
-      <FormRow
-        label="Selling Price Near /pt"
-        error={errors?.selling_price_near?.message}
-      >
+      <FormRow label="Selling Price /pt" error={errors?.selling_price?.message}>
         <Input
           type="number"
-          id="selling_price_near"
-          defaultValue={defaultSellingPriceNear}
+          id="selling_price"
+          defaultValue={defaultSellingPrice}
           disabled={isWorking}
-          {...register("selling_price_near", {
-            required: "This field is required",
-          })}
-        />
-      </FormRow>
-
-      <FormRow
-        label="Selling Price Far /pt"
-        error={errors?.selling_price_far?.message}
-      >
-        <Input
-          type="number"
-          id="selling_price_far"
-          defaultValue={defaultSellingPriceFar}
-          disabled={isWorking}
-          {...register("selling_price_far", {
+          {...register("selling_price", {
             required: "This field is required",
           })}
         />
@@ -217,7 +217,6 @@ function EditStockItem({ item, onCloseModal }) {
 
       <FormRow>
         <StackedButtons>
-          {/* type is an HTML attribute! */}
           <Button
             variation="secondary"
             type="reset"

@@ -33,11 +33,13 @@ const StyledList = styled.ul`
   position: fixed;
 
   background-color: var(--color-grey-0);
+  border: 1px solid var(--color-grey-200);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
 
   right: ${(props) => props.position.x}px;
   top: ${(props) => props.position.y}px;
+  z-index: 500;
 `;
 
 const StyledButton = styled.button`

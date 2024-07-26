@@ -97,7 +97,7 @@ function CreateCustomerForm({ onCloseModal }) {
 
     delete new_customer["routes"];
 
-    console.log(new_customer);
+    // console.log(new_customer);
     addCustomer({ new_customer });
     onCloseModal();
   }

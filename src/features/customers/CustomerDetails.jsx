@@ -16,8 +16,10 @@ import { useDeleteCustomer } from "./useDeleteCustomer";
 import { useCustomerById } from "./useCustomerById";
 
 const StyledCustomerDetailsComponent = styled.div`
-  width: 75vw;
+  /* width: 75vw; */
+  width: 100%;
   height: 80vh;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,10 +28,14 @@ const StyledCustomerDetailsComponent = styled.div`
   /* &:not(:last-child) {
     border-bottom: 1px solid var(--color-grey-100);
   } */
+
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-width: none;
 `;
 
 const StyledImagesContainer = styled.div`
-  width: 127%;
+  width: 115%;
   height: 33%;
   position: relative;
   margin-top: 1rem;
@@ -61,7 +67,7 @@ const StyledOwnerImage = styled.div`
 `;
 
 const DataBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 
@@ -72,7 +78,7 @@ const DataBox = styled.div`
 `;
 
 const IconBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-evenly;

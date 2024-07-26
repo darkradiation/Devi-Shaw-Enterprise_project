@@ -5,8 +5,7 @@ import { useStock } from "../stock/useStock";
 import styled from "styled-components";
 
 const StyledDiv = styled.div`
-  display: flex;
-  gap: -2rem;
+  /* margin: 0; */
 `;
 
 function SchemeTableOperations() {
@@ -14,15 +13,16 @@ function SchemeTableOperations() {
   if (isLoadingStock) return;
   return (
     <StyledDiv>
-      <Row type="horizontal">
+      {/* <Row type="horizontal">
         <Filter
           filterField="scheme_type"
           options={[
-            { value: "schemes_near", label: "Near" },
-            { value: "schemes_far", label: "Far" },
+            { value: "schemes_1", label: "1" },
+            { value: "schemes_2", label: "2" },
+            { value: "schemes_3", label: "3" },
           ]}
         />
-      </Row>
+      </Row> */}
 
       <Row type="horizontal">
         <Filter

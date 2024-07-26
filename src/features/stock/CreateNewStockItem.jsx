@@ -1,11 +1,13 @@
+import styled from "styled-components";
+import { useForm } from "react-hook-form";
+
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FormRow from "../../ui/FormRow";
 import Heading from "../../ui/Heading";
-import styled from "styled-components";
-import { useForm } from "react-hook-form";
 import Spinner from "../../ui/Spinner";
+
 import { useAddStockItem } from "./useAddStockItem";
 
 const StackedButtons = styled.div`
@@ -27,54 +29,30 @@ function CreateNewStockItem({ onCloseModal }) {
     quantity_per_pt,
     mrp_per_pc,
     buying_price,
-    selling_price_near,
-    selling_price_far,
+    selling_price,
     available_pt,
     available_pcs,
   }) {
-    const buying_price_per_pc = (buying_price / quantity_per_pt).toFixed(2);
-    const selling_price_near_per_pc = (
-      selling_price_near / quantity_per_pt
+    const buying_price_per_pc = (
+      Number(buying_price) / quantity_per_pt
     ).toFixed(2);
-    const selling_price_far_per_pc = (
-      selling_price_far / quantity_per_pt
+    const base_selling_price_per_pc = (
+      Number(selling_price) / Number(quantity_per_pt)
     ).toFixed(2);
 
     const new_stock = {
       item_name,
-      quantity_per_pt,
-      buying_price_per_pt: buying_price,
-      selling_price_per_pt: {
-        near: selling_price_near,
-        far: selling_price_far,
-      },
-      buying_price_per_pc,
-      selling_price_per_pc: {
-        near: selling_price_near_per_pc,
-        far: selling_price_far_per_pc,
-      },
-      mrp_per_pc,
-      available_stock: { pt: available_pt, pcs: available_pcs },
+      quantity_per_pt: Number(quantity_per_pt),
+      buying_price_per_pt: Number(buying_price),
+      base_selling_price_per_pt: Number(selling_price),
+      buying_price_per_pc: Number(buying_price_per_pc),
+      base_selling_price_per_pc: Number(base_selling_price_per_pc),
+      mrp_per_pc: Number(mrp_per_pc),
+      available_stock: { pt: Number(available_pt), pcs: Number(available_pcs) },
     };
 
     console.log(new_stock);
     addStockItem({ new_stock });
-
-    // const new_scheme = {
-    //   id: addedStockItem.id,
-    //   item_id: addedStockItem.id,
-    //   free_1pt: null,
-    //   free_2pt: null,
-    //   free_3pt: null,
-    //   free_4pt: null,
-    //   free_5pt: null,
-    //   free_6pt: null,
-    //   free_10pt: null,
-    //   free_12pt: null,
-    // };
-
-    // addScheme({ new_scheme });
-    // console.log(new_scheme);
     onCloseModal();
   }
 
@@ -91,7 +69,7 @@ function CreateNewStockItem({ onCloseModal }) {
   return (
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow>
-        <Heading as="h4">Edit stock item</Heading>
+        <Heading as="h4">Add new stock item</Heading>
       </FormRow>
 
       <FormRow label="Item name" error={errors?.item_name?.message}>
@@ -138,29 +116,12 @@ function CreateNewStockItem({ onCloseModal }) {
         />
       </FormRow>
 
-      <FormRow
-        label="Selling Price Near /pt"
-        error={errors?.selling_price_near?.message}
-      >
+      <FormRow label="Selling Price /pt" error={errors?.selling_price?.message}>
         <Input
           type="number"
-          id="selling_price_near"
+          id="selling_price"
           disabled={isWorking}
-          {...register("selling_price_near", {
-            required: "This field is required",
-          })}
-        />
-      </FormRow>
-
-      <FormRow
-        label="Selling Price Far /pt"
-        error={errors?.selling_price_far?.message}
-      >
-        <Input
-          type="number"
-          id="selling_price_far"
-          disabled={isWorking}
-          {...register("selling_price_far", {
+          {...register("selling_price", {
             required: "This field is required",
           })}
         />
@@ -173,6 +134,7 @@ function CreateNewStockItem({ onCloseModal }) {
         <Input
           type="number"
           id="available_pt"
+          defaultValue={0}
           disabled={isWorking}
           {...register("available_pt", {
             required: "This field is required",
@@ -187,6 +149,7 @@ function CreateNewStockItem({ onCloseModal }) {
         <Input
           type="number"
           id="available_pcs"
+          defaultValue={0}
           disabled={isWorking}
           {...register("available_pcs", {
             required: "This field is required",

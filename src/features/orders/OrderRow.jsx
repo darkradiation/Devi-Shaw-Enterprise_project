@@ -9,6 +9,7 @@ import Menus from "../../ui/Menus";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import OrderDetails from "./OrderDetails";
 import ConfirmUpdate from "./ConfirmUpdate";
+import ConfirmPayment from "./ConfirmPayment";
 
 import { useDeleteOrder } from "./useDeleteOrder";
 import { useUpdateOrder } from "./useUpdateOrder";
@@ -67,9 +68,11 @@ function OrderRow({ order }) {
     is_delivered,
     is_paid,
     bill_value,
+    outstanding_payment,
+    payments,
     // customers: { store_name },
   } = order;
-  // bug -- as soon i update the order the customers attribute is removed and the component crashes. to temporarily fix it i a used conditional chaining below . but now a new bug appears that is after changing the status it dose not updates in the page unless i refresh the page
+
   const store_name = order.customers?.store_name;
 
   const { isDeletingOrder, deleteOrder } = useDeleteOrder();
@@ -83,18 +86,55 @@ function OrderRow({ order }) {
     const modifiedOrder = {
       ...order,
       is_delivered: true,
+      outstanding_payment: bill_value,
       delivery_date: fromToday(0),
     };
     delete modifiedOrder["customers"];
     updateOrder({ id, updated_order: modifiedOrder });
   }
 
-  function markPaid() {
-    const modifiedOrder = {
-      ...order,
-      is_paid: true,
-      payment_date: fromToday(0),
-    };
+  // function makePayment({ amount }) {
+  //   if (!amount) return null;
+  //   let modifiedOrder;
+  //   if (amount < outstanding_payment) {
+  //     modifiedOrder = {
+  //       ...order,
+  //       outstanding_payment: outstanding_payment - amount,
+  //     };
+  //   }
+  //   if (amount === outstanding_payment) {
+  //     modifiedOrder = {
+  //       ...order,
+  //       is_paid: true,
+  //       outstanding_payment: 0,
+  //       payment_date: fromToday(0),
+  //     };
+  //   }
+  //   delete modifiedOrder["customers"];
+  //   updateOrder({ id, updated_order: modifiedOrder });
+  // }
+
+  function makePayment({ amount }) {
+    if (!amount) return null;
+    if (amount > outstanding_payment) return null; // show a toast
+
+    let modifiedOrder = { ...order };
+
+    if (!modifiedOrder.payments) {
+      modifiedOrder.payments = [];
+    }
+
+    const paymentDate = fromToday(0);
+    modifiedOrder.payments.push({ amount, date: paymentDate });
+
+    if (amount < outstanding_payment) {
+      modifiedOrder.outstanding_payment = outstanding_payment - amount;
+    } else if (amount === outstanding_payment) {
+      modifiedOrder.is_paid = true;
+      modifiedOrder.outstanding_payment = 0;
+      modifiedOrder.payment_date = paymentDate;
+    }
+
     delete modifiedOrder["customers"];
     updateOrder({ id, updated_order: modifiedOrder });
   }
@@ -102,7 +142,11 @@ function OrderRow({ order }) {
   const status = is_delivered ? (is_paid ? "paid" : "due") : "pending";
   const tag = is_delivered ? (is_paid ? "green" : "red") : "blue";
 
-  const action = is_delivered ? (is_paid ? "" : "Mark paid") : "Mark delivered";
+  const action = is_delivered
+    ? is_paid
+      ? ""
+      : "Make payment"
+    : "Mark delivered";
   const confirmation = is_delivered
     ? is_paid
       ? ""
@@ -139,8 +183,13 @@ function OrderRow({ order }) {
                 <Menus.Button icon={<ImCancelCircle />}>Cancel</Menus.Button>
               </Modal.Open>
             )}
-            {action && (
-              <Modal.Open opens="edit">
+            {action === "Mark delivered" && (
+              <Modal.Open opens="markDelivered">
+                <Menus.Button icon={<HiPencil />}>{action}</Menus.Button>
+              </Modal.Open>
+            )}
+            {action === "Make payment" && (
+              <Modal.Open opens="makePayment">
                 <Menus.Button icon={<HiPencil />}>{action}</Menus.Button>
               </Modal.Open>
             )}
@@ -151,19 +200,21 @@ function OrderRow({ order }) {
           <Modal.Window name="details">
             <OrderDetails order={order} />
           </Modal.Window>
-          <Modal.Window name="edit">
+          <Modal.Window name="markDelivered">
             <ConfirmUpdate
               task={"Update"}
               orderId={id}
               confirmation={confirmation}
               disabled={isWorking}
-              onConfirm={() => {
-                if (action === "Mark delivered") {
-                  markDelivered();
-                } else {
-                  markPaid();
-                }
-              }}
+              onConfirm={markDelivered}
+            />
+          </Modal.Window>
+          <Modal.Window name="makePayment">
+            <ConfirmPayment
+              orderId={id}
+              outstanding_payment={outstanding_payment}
+              disabled={isWorking}
+              onConfirm={makePayment}
             />
           </Modal.Window>
           <Modal.Window name="cancel">

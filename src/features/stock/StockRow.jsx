@@ -34,7 +34,7 @@ function StockRow({ item }) {
     id,
     item_name,
     buying_price_per_pt,
-    selling_price_per_pt: { near: selling_price_near, far: selling_price_far },
+    base_selling_price_per_pt,
     available_stock: { pt: available_pt, pcs: available_pcs },
     quantity_per_pt,
   } = item;
@@ -55,23 +55,10 @@ function StockRow({ item }) {
           <span>BP - </span>
           <span>Rs.{buying_price_per_pt}</span>
         </Stacked2>
-        {selling_price_near === selling_price_far ? (
-          <Stacked2>
-            <span>SP - </span>
-            <span>Rs.{selling_price_near}</span>
-          </Stacked2>
-        ) : (
-          <>
-            <Stacked2>
-              <span>SP(n) - </span>
-              <span>Rs.{selling_price_near}</span>
-            </Stacked2>
-            <Stacked2>
-              <span>SP(f) - </span>
-              <span>Rs.{selling_price_far}</span>
-            </Stacked2>
-          </>
-        )}
+        <Stacked2>
+          <span>SP - </span>
+          <span>Rs.{base_selling_price_per_pt}</span>
+        </Stacked2>
       </Stacked1>
 
       <Stacked1>

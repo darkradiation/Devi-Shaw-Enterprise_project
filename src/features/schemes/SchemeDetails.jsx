@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import EditScheme from "./EditScheme";
 import ConfirmDelete from "../../ui/ConfirmDelete";
@@ -10,17 +9,22 @@ import ButtonIcon from "../../ui/ButtonIcon";
 import { HiPencil, HiTrash } from "react-icons/hi2";
 
 const StyledSchemeDetailsComponent = styled.div`
-  width: 75vw;
+  /* width: 75vw; */
+  width: 100%;
   height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.2rem;
   padding: 1rem 0 2rem 0;
+
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-width: none;
 `;
 
 const HeadingBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -33,7 +37,7 @@ const HeadingBox = styled.div`
 `;
 
 const DataBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -46,7 +50,7 @@ const DataBox = styled.div`
 `;
 
 const IconBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -59,7 +63,7 @@ const IconBox = styled.div`
 `;
 
 const PricingBox = styled.div`
-  width: 110%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 
@@ -91,6 +95,12 @@ const PriceItem = styled.div`
       border-top: 1px solid var(--color-grey-600);
     }
   }
+
+  &:nth-child(5) {
+    & div:last-child {
+      border-top: 1px solid var(--color-grey-600);
+    }
+  }
 `;
 
 const Stacked2 = styled.div`
@@ -108,35 +118,14 @@ const Stacked2 = styled.div`
   }
 `;
 
-const Stacked = styled.div`
-  display: grid;
-  grid-template-columns: 4fr 7fr;
-  align-items: start;
-
-  & div:first-child {
-    font-size: 1.3rem;
-    font-weight: 600;
-  }
-  & div:last-child {
-    font-size: 1.4rem;
-  }
-
-  margin-bottom: 0.5rem;
-`;
-
-const Stacked4 = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
 function SchemeDetails({ scheme, scheme_item_id, scheme_item_name }) {
   const {
-    profit,
     free_items,
     scheme_level,
     buying_price,
-    profit_per_pt,
     base_selling_price,
+    discount,
+    discounted_selling_price,
     total_free_value_mrp_price,
     total_free_value_buying_price,
     effective_buying_price_customer,
@@ -150,7 +139,7 @@ function SchemeDetails({ scheme, scheme_item_id, scheme_item_name }) {
       item_name: scheme_item_name,
       item_quantity: scheme_level,
       buying_price: Number(buying_price) / Number(scheme_level),
-      selling_price: Number(base_selling_price) / Number(scheme_level),
+      selling_price: Number(discounted_selling_price) / Number(scheme_level),
     },
   ];
 
@@ -160,6 +149,10 @@ function SchemeDetails({ scheme, scheme_item_id, scheme_item_name }) {
     schemeItemId,
     scheme_level,
   });
+
+  const hasFreeItems =
+    free_items[0].free_item_quantity > 0 ||
+    free_items[1].free_item_quantity > 0;
 
   return (
     <StyledSchemeDetailsComponent>
@@ -195,72 +188,96 @@ function SchemeDetails({ scheme, scheme_item_id, scheme_item_name }) {
           </Stacked2>
           <Stacked2>
             <div>Selling Price : </div>
-            <div>Rs. {base_selling_price}</div>
+            <div>Rs. {discounted_selling_price}</div>
           </Stacked2>
         </div>
       </DataBox>
 
-      <DataBox>
-        <Heading as="h3">Free Items</Heading>
-        <Table columns="1fr 5fr 2fr 2fr">
-          <Table.Header>
-            <div>qt.</div>
-            <div>name</div>
-            <div>bp</div>
-            <div>mrp</div>
-          </Table.Header>
-          <Table.Body
-            data={free_items}
-            render={(item) => (
-              <Table.Row role="row">
-                <div>{item.free_item_quantity}</div>
-                <div>{item.free_item_name}</div>
-                <div>{item.free_value_buying_price}</div>
-                <div>{item.free_value_mrp_price}</div>
-              </Table.Row>
-            )}
-          />
-        </Table>
-        <div>
-          <Stacked2>
-            <div>Buying Price : </div>
-            <div>Rs. {total_free_value_buying_price}</div>
-          </Stacked2>
-          <Stacked2>
-            <div>Total Mrp Price : </div>
-            <div>Rs. {total_free_value_mrp_price}</div>
-          </Stacked2>
-        </div>
-      </DataBox>
+      {hasFreeItems && (
+        <DataBox>
+          <Heading as="h3">Free Items</Heading>
+          <Table columns="1fr 5fr 2fr 2fr">
+            <Table.Header>
+              <div>qt.</div>
+              <div>name</div>
+              <div>bp</div>
+              <div>mrp</div>
+            </Table.Header>
+            <Table.Body
+              data={free_items}
+              render={(item) => (
+                <Table.Row role="row">
+                  <div>{item.free_item_quantity}</div>
+                  <div>{item.free_item_name}</div>
+                  <div>{item.free_value_buying_price}</div>
+                  <div>{item.free_value_mrp_price}</div>
+                </Table.Row>
+              )}
+            />
+          </Table>
+          <div>
+            <Stacked2>
+              <div>Buying Price : </div>
+              <div>Rs. {total_free_value_buying_price}</div>
+            </Stacked2>
+            <Stacked2>
+              <div>Total Mrp Price : </div>
+              <div>Rs. {total_free_value_mrp_price}</div>
+            </Stacked2>
+          </div>
+        </DataBox>
+      )}
 
-      <PricingBox>
-        {/* <Heading as="h4">Pricing for Customer</Heading> */}
-        <PriceItem>
-          <div>Base Selling Price</div>
-          <div>{base_selling_price}</div>
-        </PriceItem>
+      {hasFreeItems && (
+        <PricingBox>
+          {/* <Heading as="h4">Pricing for Customer</Heading> */}
+          <PriceItem>
+            <div>Base Selling Price</div>
+            <div>{base_selling_price}</div>
+          </PriceItem>
 
-        <PriceItem>
-          <div>Free MRP value</div>
-          <div>- {total_free_value_mrp_price}</div>
-        </PriceItem>
+          <PriceItem>
+            <div>discount</div>
+            <div>- {discount}</div>
+          </PriceItem>
 
-        <PriceItem>
-          <div>BP for Customer</div>
-          <div>{effective_buying_price_customer}</div>
-        </PriceItem>
+          <PriceItem>
+            <div>Discounted SP</div>
+            <div>{discounted_selling_price}</div>
+          </PriceItem>
 
-        <PriceItem>
-          <div>BP for Customer/pt</div>
-          <div>{effective_buying_price_customer_per_pt}</div>
-        </PriceItem>
-      </PricingBox>
+          <PriceItem>
+            <div>Free MRP value</div>
+            <div>- {total_free_value_mrp_price}</div>
+          </PriceItem>
+
+          <PriceItem>
+            <div>BP for Customer</div>
+            <div>{effective_buying_price_customer}</div>
+          </PriceItem>
+
+          <PriceItem>
+            <div>BP for Customer/pt</div>
+            <div>{effective_buying_price_customer_per_pt}</div>
+          </PriceItem>
+        </PricingBox>
+      )}
 
       <PricingBox>
         {/* <Heading as="h4">Pricing for Enterprise</Heading> */}
         <PriceItem>
           <div>Base Selling Price</div>
           <div>{base_selling_price}</div>
+        </PriceItem>
+
+        <PriceItem>
+          <div>discount</div>
+          <div>- {discount}</div>
+        </PriceItem>
+
+        <PriceItem>
+          <div>Discounted SP</div>
+          <div>{discounted_selling_price}</div>
         </PriceItem>
 
         <PriceItem>

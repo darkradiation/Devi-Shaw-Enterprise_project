@@ -1,11 +1,11 @@
-import FormRow from "../../ui/FormRow";
+import { useState } from "react";
 import styled from "styled-components";
+import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import Checkbox from "../../ui/Checkbox";
-import { useState } from "react";
-import { useSchemeNearByItemId } from "../schemes/useSchemeNearByItemId";
-import { useSchemeFarByItemId } from "../schemes/useSchemeFarByItemId";
-import { useEffect } from "react";
+import { useScheme1ByItemId } from "../schemes/useScheme1ByItemId";
+import { useScheme2ByItemId } from "../schemes/useScheme2ByItemId";
+import { useScheme3ByItemId } from "../schemes/useScheme3ByItemId";
 
 const Label = styled.label`
   font-weight: 500;
@@ -46,231 +46,213 @@ const Stacked2 = styled.div`
     /* font-weight: 600; */
   }
 `;
-function CreateOrderItem({ item, nearOrFar, newOrder, setNewOrder }) {
+
+function CreateOrderItem({ item, newOrder, setNewOrder }) {
   const {
     id,
     item_name,
     buying_price_per_pt,
-    selling_price_per_pt: { near: selling_price_near, far: selling_price_far },
+    base_selling_price_per_pt,
     available_stock: { pt: available_pt },
   } = item;
 
-  const selling_price =
-    nearOrFar == "near" ? selling_price_near : selling_price_far;
+  const [selectedScheme, setSelectedScheme] = useState(0);
 
-  const [addScheme, setAddScheme] = useState(false);
-  const [discount, setDiscount] = useState(0);
-  const [freeItems, setFreeItems] = useState([]);
+  const [addScheme1, setAddScheme1] = useState(false);
+  const [addScheme2, setAddScheme2] = useState(false);
+  const [addScheme3, setAddScheme3] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+  const [discountPerPt, setDiscountPerPt] = useState(0);
   const [freeItemsString, setFreeItemsString] = useState("");
 
-  const { isLoadingSchemeNear, scheme_near } = useSchemeNearByItemId(id);
-  const { isLoadingSchemeFar, scheme_far } = useSchemeFarByItemId(id);
+  const { isLoadingScheme1, scheme_1 } = useScheme1ByItemId(id);
+  const { isLoadingScheme2, scheme_2 } = useScheme2ByItemId(id);
+  const { isLoadingScheme3, scheme_3 } = useScheme3ByItemId(id);
 
-  useEffect(
-    function () {
-      const quantity = newOrder.order_items.find(
-        (item) => item.item_id === id
-      )?.item_quantity;
-      const schemeLevel = getSchemeLevel(quantity);
+  const isWorking = isLoadingScheme1 || isLoadingScheme2 || isLoadingScheme3;
+  if (isWorking) return null;
 
-      if (schemeLevel && quantity) {
-        const scheme = nearOrFar == "near" ? scheme_near : scheme_far;
-        const free_items = scheme[`free_${schemeLevel}pt`]?.free_items;
+  const handleQuantityChange = (event) => {
+    const newQuantity = Number(event.target.value) || 0;
+    setQuantity(newQuantity);
+    // updateOrderItem(id, { item_quantity: newQuantity });
+    updateFreeItemsString(selectedScheme, newQuantity);
+  };
 
-        console.log(free_items);
-        let temp = "";
-        if (free_items) {
-          free_items.forEach((free_item) => {
-            const freeItemName = free_item.free_item_name;
-            const freeItemQuantity = free_item.free_item_quantity;
+  const handleDiscountChange = (event) => {
+    const newDiscount = Number(event.target.value) || 0;
+    setDiscountPerPt(newDiscount);
+    updateOrderItem(id, {
+      discount: Number((newDiscount * quantity).toFixed(2)),
+    });
+  };
 
-            if (Number(freeItemQuantity) > 0) {
-              temp = `${temp}${freeItemQuantity}pc-${freeItemName} ,`;
-            }
-          });
-        }
-        if (temp) {
-          setFreeItemsString(temp);
-          setFreeItems(free_items);
-        }
-      } else if (addScheme) {
-        setFreeItemsString("No scheme");
-        setFreeItems([]);
-      } else {
-        setFreeItemsString("");
-        setFreeItems([]);
+  const handleAddScheme1Change = (event) => {
+    const isChecked = event.target.checked;
+    setAddScheme1(isChecked);
+    setAddScheme2(false);
+    setAddScheme3(false);
+    setSelectedScheme(isChecked ? 1 : 0);
+    updateFreeItemsString(
+      isChecked ? 1 : 0,
+      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity
+    );
+  };
+
+  const handleAddScheme2Change = (event) => {
+    const isChecked = event.target.checked;
+    setAddScheme2(isChecked);
+    setAddScheme1(false);
+    setAddScheme3(false);
+    setSelectedScheme(isChecked ? 2 : 0);
+    updateFreeItemsString(
+      isChecked ? 2 : 0,
+      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity
+    );
+  };
+
+  const handleAddScheme3Change = (event) => {
+    const isChecked = event.target.checked;
+    setAddScheme3(isChecked);
+    setAddScheme2(false);
+    setAddScheme1(false);
+    setSelectedScheme(isChecked ? 3 : 0);
+    updateFreeItemsString(
+      isChecked ? 3 : 0,
+      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity
+    );
+  };
+
+  const updateFreeItemsString = (scheme, quantity) => {
+    const schemeLevel = getSchemeLevel(quantity);
+    if (schemeLevel && quantity && scheme !== 0) {
+      const schemeData =
+        scheme === 1 ? scheme_1 : scheme === 2 ? scheme_2 : scheme_3;
+      const free_items = schemeData[`free_${schemeLevel}pt`]?.free_items;
+      const schemeDiscount = schemeData[`free_${schemeLevel}pt`]
+        ?.discount_per_pt
+        ? schemeData[`free_${schemeLevel}pt`]?.discount_per_pt
+        : 0;
+
+      setDiscountPerPt(schemeDiscount);
+
+      let temp = "";
+      if (free_items) {
+        free_items.forEach((free_item) => {
+          const { free_item_name, free_item_quantity } = free_item;
+          if (Number(free_item_quantity) > 0) {
+            temp = `${temp}${free_item_quantity}pc-${free_item_name} ,`;
+          }
+        });
       }
-    },
-    [
-      addScheme,
-      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity,
-      id,
-      nearOrFar,
-      newOrder,
-      scheme_far,
-      scheme_near,
-    ]
-  );
+      setFreeItemsString(temp || "No scheme");
+      updateOrderItem(id, {
+        free_items: temp ? free_items : [],
+        item_quantity: quantity,
+        discount: Number((schemeDiscount * quantity).toFixed(2)),
+      });
+    } else {
+      setFreeItemsString("");
+      setDiscountPerPt(0);
+      updateOrderItem(id, {
+        free_items: [],
+        item_quantity: quantity,
+        discount: 0,
+      });
+    }
+  };
 
-  const isWorking = isLoadingSchemeNear || isLoadingSchemeFar;
-  if (isWorking) return;
-
-  function handleQuantityChange(event) {
-    const itemId = id;
-    const newQuantity = Number(event.target.value);
-
+  const updateOrderItem = (itemId, updates) => {
+    console.log(itemId, updates);
     const existingItemIndex = newOrder.order_items.findIndex(
       (item) => item.item_id === itemId
     );
+    const updatedOrderItems = [...newOrder.order_items];
 
     if (existingItemIndex !== -1) {
-      // Update the existing item
-
-      const updatedOrderItems = [...newOrder.order_items];
-
-      if (newQuantity === 0 || newQuantity === "") {
-        // Remove the item if quantity is set to zero
+      if (updates.item_quantity === 0) {
         updatedOrderItems.splice(existingItemIndex, 1);
       } else {
         const updatedItem = {
-          ...newOrder.order_items[existingItemIndex],
-          item_quantity: newQuantity,
+          ...updatedOrderItems[existingItemIndex],
+          ...updates,
         };
         updatedOrderItems[existingItemIndex] = updatedItem;
       }
-
-      const modifiedOrder = {
-        ...newOrder,
-        order_items: updatedOrderItems,
-      };
-      setNewOrder(modifiedOrder);
-    } else {
-      // Add a new item
-      const modifiedOrder = {
-        ...newOrder,
-        order_items: [
-          ...newOrder.order_items,
-          {
-            item_id: itemId,
-            item_name: item_name,
-            buying_price: buying_price_per_pt,
-            item_quantity: newQuantity,
-            selling_price: Number(selling_price),
-            free_items: [],
-            discount: 0,
-          },
-        ],
-      };
-      setNewOrder(modifiedOrder);
+    } else if (updates.item_quantity > 0) {
+      updatedOrderItems.push({
+        ...updates,
+        item_id: itemId,
+        item_name,
+        buying_price: buying_price_per_pt,
+        selling_price: base_selling_price_per_pt,
+      });
     }
-  }
-  function handleDiscountChange(event) {
-    const d = Number(event.target.value) ? Number(event.target.value) : 0;
-    setDiscount(d);
 
-    const itemId = id;
-    const existingItemIndex = newOrder.order_items.findIndex(
-      (item) => item.item_id === itemId
-    );
-    if (existingItemIndex !== -1) {
-      const updatedOrderItems = [...newOrder.order_items];
+    setNewOrder({ ...newOrder, order_items: updatedOrderItems });
+    console.log(updatedOrderItems);
+  };
 
-      const updatedItem = {
-        ...newOrder.order_items[existingItemIndex],
-        discount: d,
-      };
-      updatedOrderItems[existingItemIndex] = updatedItem;
-
-      const modifiedOrder = {
-        ...newOrder,
-        order_items: updatedOrderItems,
-      };
-      setNewOrder(modifiedOrder);
-    }
-  }
-  function handleAddSchemeChange(event) {
-    setAddScheme(event.target.checked);
-
-    const itemId = id;
-    const existingItemIndex = newOrder.order_items.findIndex(
-      (item) => item.item_id === itemId
-    );
-    if (existingItemIndex !== -1) {
-      const updatedOrderItems = [...newOrder.order_items];
-
-      const updatedItem = {
-        ...newOrder.order_items[existingItemIndex],
-        free_items: freeItems,
-      };
-      updatedOrderItems[existingItemIndex] = updatedItem;
-
-      const modifiedOrder = {
-        ...newOrder,
-        order_items: updatedOrderItems,
-      };
-      setNewOrder(modifiedOrder);
-    }
-  }
-  function getSchemeLevel(quantity) {
-    switch (quantity) {
-      case 1:
-        return 1;
-      case 2:
-        return 2;
-      case 3:
-        return 3;
-      case 4:
-        return 4;
-      case 5:
-        return 5;
-      case 6:
-        return 6;
-      case 10:
-        return 10;
-      case 12:
-        return 12;
-      default:
-        return null;
-    }
-  }
+  const getSchemeLevel = (quantity) => {
+    const levels = [1, 2, 3, 4, 5, 6, 10, 12];
+    return levels.includes(quantity) ? quantity : null;
+  };
 
   return (
     <FormRow type="order">
       <Stacked2>
         <span>{item_name}</span>
         <span>
-          Rs.{selling_price} -- {available_pt} pt.
+          Rs.{base_selling_price_per_pt} -- {available_pt} pt.
         </span>
       </Stacked2>
       <Stacked1>
         <div>
           <Label htmlFor="quantity">quantity</Label>
           <Input
-            type="number"
+            type="text"
             id="quantity"
-            defaultValue={0}
+            value={quantity}
             onChange={handleQuantityChange}
           />
         </div>
         <div>
-          <Label htmlFor="discount">Discount</Label>
+          <Label htmlFor="discountPerPt">Discount/pt</Label>
           <Input
             type="text"
-            id="discount"
-            defaultValue={discount}
+            id="discountPerPt"
+            value={discountPerPt}
             onChange={handleDiscountChange}
           />
         </div>
       </Stacked1>
+
       <Stacked2>
         <Checkbox
-          id="scheme"
-          checked={addScheme}
-          onChange={handleAddSchemeChange}
+          id="scheme1"
+          checked={addScheme1}
+          onChange={handleAddScheme1Change}
         >
-          Add Scheme
+          Scm1
         </Checkbox>
-        {addScheme && <span>{freeItemsString}</span>}
+        <Checkbox
+          id="scheme2"
+          checked={addScheme2}
+          onChange={handleAddScheme2Change}
+        >
+          Scm2
+        </Checkbox>
+        <Checkbox
+          id="scheme3"
+          checked={addScheme3}
+          onChange={handleAddScheme3Change}
+        >
+          Scm3
+        </Checkbox>
+        {/* {(addScheme1 || addScheme2) && <span>{freeItemsString}</span>} */}
+      </Stacked2>
+      <Stacked2>
+        {(addScheme1 || addScheme2) && <span>{freeItemsString}</span>}
       </Stacked2>
     </FormRow>
   );

@@ -13,12 +13,13 @@ export function useRefillStock() {
           const originalStock = queryClient
             .getQueryData(["stock"])
             .find((item) => item.id === Number(itemId));
-          const newQuantity = originalStock.available_stock.pt + refillQuantity;
+          const newQuantity =
+            Number(originalStock.available_stock.pt) + Number(refillQuantity);
           const newBuyingPrice = buyingPrice
             ? buyingPrice
             : originalStock.buying_price_per_pt;
 
-          console.log(itemId, newQuantity, newBuyingPrice);
+          // console.log(itemId, newQuantity, newBuyingPrice);
           return updateStockItem({
             id: itemId,
             updated_stock: {

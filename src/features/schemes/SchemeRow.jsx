@@ -24,18 +24,6 @@ const Stacked1 = styled.div`
     font-weight: 400;
   }
 `;
-// const Stacked2 = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   align-items: self-start;
-//   gap: 0.2rem;
-//   /* & div:first-child {
-//     padding-left: 1rem;
-//   } */
-//   & div:last-child {
-//     font-size: 1.15rem;
-//   }
-// `;
 
 const Stacked3 = styled.div`
   display: flex;
@@ -48,6 +36,8 @@ function SchemeRow({ scheme, scheme_item_id, scheme_item_name }) {
   const {
     scheme_level,
     free_items,
+    discount_per_pt,
+    buying_price_per_pt,
     effective_buying_price_customer_per_pt,
     effective_selling_price_enterprise_per_pt,
   } = scheme;
@@ -59,16 +49,13 @@ function SchemeRow({ scheme, scheme_item_id, scheme_item_name }) {
     scheme_level,
   });
 
+  const hasFreeItems =
+    free_items[0].free_item_quantity > 0 ||
+    free_items[1].free_item_quantity > 0;
+
   return (
     <Table.Row role="row">
       <Modal>
-        {/* <Stacked3>
-        <Stacked1>
-          <span>{scheme_item_name}</span>
-          <span>{scheme_level}</span>
-        </Stacked1>
-      </Stacked3> */}
-
         <Stacked1>{scheme_level}</Stacked1>
 
         <Modal.Open opens="details">
@@ -85,18 +72,37 @@ function SchemeRow({ scheme, scheme_item_id, scheme_item_name }) {
                 <span>{free_items[1].free_item_name}</span>
               </Stacked1>
             ) : null}
+            {discount_per_pt ? (
+              <Stacked1>
+                <span>D- Rs.</span>
+                <span>{discount_per_pt}</span>
+              </Stacked1>
+            ) : null}
           </Stacked3>
         </Modal.Open>
 
         <Stacked3>
           <Stacked1>
-            <span>Ct.</span>
-            <span>- Rs.{effective_buying_price_customer_per_pt}</span>
+            <span>BP- Rs.</span>
+            <span>{buying_price_per_pt}</span>
           </Stacked1>
-          <Stacked1>
-            <span>Et.</span>
-            <span>- Rs.{effective_selling_price_enterprise_per_pt}</span>
-          </Stacked1>
+          {hasFreeItems ? (
+            <>
+              <Stacked1>
+                <span>Ct.- Rs.</span>
+                <span>{effective_buying_price_customer_per_pt}</span>
+              </Stacked1>
+              <Stacked1>
+                <span>Et.- Rs.</span>
+                <span>{effective_selling_price_enterprise_per_pt}</span>
+              </Stacked1>
+            </>
+          ) : (
+            <Stacked1>
+              <span>SP- Rs.</span>
+              <span>{effective_selling_price_enterprise_per_pt}</span>
+            </Stacked1>
+          )}
         </Stacked3>
 
         {/* <Modal> */}
