@@ -168,7 +168,10 @@ function OrderRow({ order }) {
 
         <Stacked2>
           <div>Rs. {bill_value}</div>
-          <Tag type={tag}>{status}</Tag>
+          <Tag type={tag}>
+            {status}
+            {status === "due" && `-${outstanding_payment}`}
+          </Tag>
         </Stacked2>
 
         {/* <Modal> */}
