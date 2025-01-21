@@ -103,9 +103,37 @@ function SchemeTable() {
                 scheme_item_name={scheme_item_name}
               />
             )}
+            {scheme.free_7pt && (
+              <SchemeRow
+                scheme={scheme.free_7pt}
+                scheme_item_id={scheme_item_id}
+                scheme_item_name={scheme_item_name}
+              />
+            )}
+            {scheme.free_8pt && (
+              <SchemeRow
+                scheme={scheme.free_8pt}
+                scheme_item_id={scheme_item_id}
+                scheme_item_name={scheme_item_name}
+              />
+            )}
+            {scheme.free_9pt && (
+              <SchemeRow
+                scheme={scheme.free_9pt}
+                scheme_item_id={scheme_item_id}
+                scheme_item_name={scheme_item_name}
+              />
+            )}
             {scheme.free_10pt && (
               <SchemeRow
                 scheme={scheme.free_10pt}
+                scheme_item_id={scheme_item_id}
+                scheme_item_name={scheme_item_name}
+              />
+            )}
+            {scheme.free_11pt && (
+              <SchemeRow
+                scheme={scheme.free_11pt}
                 scheme_item_id={scheme_item_id}
                 scheme_item_name={scheme_item_name}
               />
