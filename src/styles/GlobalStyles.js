@@ -31,6 +31,10 @@ const GlobalStyles = createGlobalStyle`
   --color-red-700: #b91c1c;
   --color-red-800: #991b1b;
 
+
+  --color-green-500t:rgba(0, 255, 0, 0.3);
+  --color-red-500t:rgba(255, 0, 0, 0.3);
+
    /* Indigo */
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
@@ -118,6 +122,9 @@ const GlobalStyles = createGlobalStyle`
 --color-red-100: #ca8c8c;
 --color-red-700: #b91c1c;
 --color-red-800: #991b1b;
+
+--color-green-500t:rgba(0, 255, 0, 0.3);
+  --color-red-500t:rgba(255, 0, 0, 0.3);
 
 
 --color-brand-50: #ffe8f0;

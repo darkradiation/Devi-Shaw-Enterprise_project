@@ -34,6 +34,13 @@ const StyledHeader = styled(CommonRow)`
 const StyledRow = styled(CommonRow)`
   padding: 1.2rem 2.4rem;
 
+  background-color: ${(props) =>
+    props.$visited
+      ? "var(--color-green-500t)"
+      : props.$visited === false
+      ? "var(--color-red-500t)"
+      : "transparent"};
+
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-grey-100);
   }
@@ -81,10 +88,14 @@ function Header({ children }) {
     </StyledHeader>
   );
 }
-function Row({ children }) {
+function Row({ children, visited }) {
   const { columns } = useContext(TableContext);
   return (
-    <StyledRow role="row" columns={columns}>
+    <StyledRow
+      role="row"
+      columns={columns}
+      $visited={visited} // Using transient prop "$" for styled-components
+    >
       {children}
     </StyledRow>
   );

@@ -9,6 +9,7 @@ import SalesChart from "./SalesChart";
 import { useRecentOrders } from "./useRecentOrders";
 import SalesMetricsChart from "./SalesMetricsChart";
 import ItemShareChart from "./ItemShareChart";
+import TodayActivity from "./TodayActivity";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -26,7 +27,7 @@ function DashboardLayout() {
   return (
     <StyledDashboardLayout>
       <Stats orders={recentOrders} numDays={numDays} />
-      {/* <TodayActivity /> */}
+      {numDays === 1 && <TodayActivity />}
       {numDays > 1 && <SalesChart orders={recentOrders} numDays={numDays} />}
       {numDays > 1 && (
         <SalesMetricsChart orders={recentOrders} numDays={numDays} />
