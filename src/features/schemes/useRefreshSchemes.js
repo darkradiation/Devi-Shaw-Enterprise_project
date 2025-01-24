@@ -6,10 +6,6 @@ import {
   updateScheme2,
   updateScheme3,
 } from "../../services/apiSchemes";
-import { useSchemes1 } from "./useSchemes1";
-import { useSchemes2 } from "./useSchemes2";
-import { useSchemes3 } from "./useSchemes3";
-import { useStock } from "../stock/useStock";
 import toast from "react-hot-toast";
 
 import { getStock } from "../../services/apiStock";
@@ -21,12 +17,6 @@ import {
 
 export function useRefreshSchemes() {
   const queryClient = useQueryClient();
-
-  // Get all schemes and stock data
-  //   const { isLoading: isLoadingSchemes1, schemes_1 } = useSchemes1();
-  //   const { isLoading: isLoadingSchemes2, schemes_2 } = useSchemes2();
-  //   const { isLoading: isLoadingSchemes3, schemes_3 } = useSchemes3();
-  //   const { isLoading: isLoadingStock, stock } = useStock();
 
   // Mutation for bulk updating schemes
   const { mutate: refreshSchemes, isLoading: isRefreshing } = useMutation({
