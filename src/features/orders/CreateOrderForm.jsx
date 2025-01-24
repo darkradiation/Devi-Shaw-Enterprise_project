@@ -85,7 +85,6 @@ const order_template = {
 function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   console.log("hi");
   const [selectedStoreId, setSelectedStoreId] = useState(store_id);
-  const [nearOrFar, setNearOrFar] = useState("near");
   const [newOrder, setNewOrder] = useState({
     ...order_template,
     customer_id: Number(store_id),
@@ -103,10 +102,6 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const handleStoreChange = (event) => {
     setSelectedStoreId(event.target.value);
     setNewOrder({ ...newOrder, customer_id: Number(event.target.value) });
-    setNearOrFar(
-      customers.find((customer) => customer.id === Number(selectedStoreId))
-        .routes.near_or_far
-    );
     // log the selected customer
     // console.log(
     //   "Selected customer:",
@@ -208,7 +203,6 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
         <CreateOrderItem
           key={item.id}
           item={item}
-          nearOrFar={nearOrFar}
           newOrder={newOrder}
           setNewOrder={setNewOrder}
         />
