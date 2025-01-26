@@ -21,12 +21,12 @@ function Stats({ orders, numDays }) {
 
   return (
     <StyledStats>
-      {/* <Stat
+      <Stat
         title="Orders"
         value={numOrders}
         icon={<HiOutlineShoppingCart />}
         color="blue"
-      /> */}
+      />
       <Stat
         title="Sales"
         value={formatCurrency(sales)}

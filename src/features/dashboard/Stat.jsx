@@ -6,11 +6,12 @@ const StyledStat = styled.div`
   border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
 
-  padding: 1.2rem;
+  margin: 0 0.1rem;
+  padding: 1rem;
   display: grid;
-  grid-template-columns: 6.4rem 1fr;
+  grid-template-columns: 4rem 1fr;
   grid-template-rows: auto auto;
-  column-gap: 1.2rem;
+  column-gap: 1rem;
   row-gap: 0.4rem;
 `;
 
@@ -34,7 +35,7 @@ const Icon = styled.div`
 
 const Title = styled.h5`
   align-self: end;
-  font-size: 1rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   font-weight: 600;
@@ -42,7 +43,7 @@ const Title = styled.h5`
 `;
 
 const Value = styled.p`
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   line-height: 1;
   font-weight: 500;
 `;
