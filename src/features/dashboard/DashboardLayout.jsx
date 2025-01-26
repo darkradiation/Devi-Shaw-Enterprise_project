@@ -10,6 +10,7 @@ import { useRecentOrders } from "./useRecentOrders";
 import SalesMetricsChart from "./SalesMetricsChart";
 import ItemShareChart from "./ItemShareChart";
 import TodayActivity from "./TodayActivity";
+import Row from "../../ui/Row";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -22,7 +23,13 @@ function DashboardLayout() {
   if (isWorking) return <Spinner />;
   // console.log(recentOrders);
 
-  if (recentOrders?.length === 0) return <p>no orders found.</p>;
+  if (recentOrders?.length === 0)
+    return (
+      <StyledDashboardLayout>
+        {numDays === 1 && <TodayActivity />}
+        <Row>no orders found.</Row>
+      </StyledDashboardLayout>
+    );
 
   return (
     <StyledDashboardLayout>
