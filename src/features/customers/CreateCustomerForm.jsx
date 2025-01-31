@@ -70,6 +70,7 @@ function CreateCustomerForm({ onCloseModal }) {
     open_hours,
     store_picture,
     owner_picture,
+    store_geoLink,
   }) {
     // console.log(data);
     const storePic =
@@ -92,7 +93,10 @@ function CreateCustomerForm({ onCloseModal }) {
         latitude: coords.latitude,
         longitude: coords.longitude,
       },
-      // store_geoLink: `https://www.google.com/maps/@?api=1&map_action=map&center=${coords.latitude},${coords.longitude}&zoom=15`,
+      store_geoLink: store_geoLink
+        ? store_geoLink
+        : `https://www.google.com/maps/@?api=1&map_action=map&center=${coords.latitude},${coords.longitude}&zoom=15`,
+      // distance : distance between store_geoLink and home address
     };
 
     delete new_customer["routes"];
@@ -165,6 +169,16 @@ function CreateCustomerForm({ onCloseModal }) {
           {...register("store_address", {
             required: "This field is required",
           })}
+        />
+      </FormRow>
+
+      <FormRow label="Geo Link" error={errors?.store_geoLink?.message}>
+        <Textarea
+          type="text"
+          id="store_geoLink"
+          defaultValue=""
+          disabled={isWorking}
+          {...register("store_geoLink")}
         />
       </FormRow>
 

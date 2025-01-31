@@ -46,10 +46,10 @@ function EditCustomer({ customer, onCloseModal }) {
     store_picture,
     owner_picture,
     route_id,
+    store_geoLink,
 
     // created_at,
     // store_geolocation,
-    // store_geoLink,
     // distance,
     // coords,
   } = customer;
@@ -62,6 +62,7 @@ function EditCustomer({ customer, onCloseModal }) {
   const defaultStorePicture = store_picture ? store_picture : default_store_pic;
   const defaultOwnerPicture = owner_picture ? owner_picture : default_owner_pic;
   const defaultRouteId = route_id ? route_id : 1;
+  const defaultStoreGeoLink = store_geoLink;
 
   const [routeId, setRouteId] = useState(defaultRouteId);
   const { isLoadingRoutes, routes } = useRoutes();
@@ -85,6 +86,7 @@ function EditCustomer({ customer, onCloseModal }) {
     open_hours,
     store_picture,
     owner_picture,
+    store_geoLink,
   }) {
     const storePic =
       typeof store_picture === "string"
@@ -106,7 +108,8 @@ function EditCustomer({ customer, onCloseModal }) {
       owner_name === defaultOwnerName &&
       open_hours === defaultOpenHours &&
       storePic === defaultStorePicture &&
-      ownerPic === defaultOwnerPicture
+      ownerPic === defaultOwnerPicture &&
+      store_geoLink == defaultStoreGeoLink
     ) {
       onCloseModal();
       return;
@@ -121,13 +124,13 @@ function EditCustomer({ customer, onCloseModal }) {
       store_picture: storePic,
       owner_picture: ownerPic,
       route_id: routeId,
+      store_geoLink,
 
       //   id,
       //   distance,
       //   coords,
       //   created_at,
       //   store_geolocation,
-      //   store_geoLink,
     };
 
     delete updated_customer["routes"];
@@ -204,6 +207,16 @@ function EditCustomer({ customer, onCloseModal }) {
           {...register("store_address", {
             required: "This field is required",
           })}
+        />
+      </FormRow>
+
+      <FormRow label="Geo Link" error={errors?.store_geoLink?.message}>
+        <Textarea
+          type="text"
+          id="store_geoLink"
+          defaultValue=""
+          disabled={isWorking}
+          {...register("store_geoLink")}
         />
       </FormRow>
 
