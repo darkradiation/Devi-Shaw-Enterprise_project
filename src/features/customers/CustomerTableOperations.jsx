@@ -2,7 +2,7 @@ import { FaFilter } from "react-icons/fa";
 import Searchbar from "../../ui/Searchbar";
 import SortBy from "../../ui/SortBy";
 import Menus from "../../ui/Menus";
-import FilterByDay from "../../ui/FilterByDay";
+import FilterBy from "../../ui/FilterBy";
 import ButtonIcon from "../../ui/ButtonIcon";
 import { GrPowerReset } from "react-icons/gr";
 import { useSearchParams } from "react-router-dom";
@@ -26,7 +26,8 @@ function CustomerTableOperations() {
               { value: "store_name-desc", label: "Alpha (desc)" },
             ]}
           />
-          <FilterByDay
+          <FilterBy
+            filterField="filterByDay"
             options={[
               { value: "all", label: "all days" },
               { value: "1", label: "monday" },

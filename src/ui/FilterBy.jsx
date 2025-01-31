@@ -1,13 +1,15 @@
 import { useSearchParams } from "react-router-dom";
 import Select from "./Select";
 
-function FilterByDay({ options }) {
+function FilterBy({ filterField, options }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const currentSelectValue = searchParams.get("filterByDay") || "";
+  const currentFilterValue =
+    searchParams.get(filterField) || options.at(0).value;
 
   function handleChange(e) {
-    searchParams.set("filterByDay", e.target.value);
+    searchParams.set(filterField, e.target.value);
+    searchParams.set("page", "1");
     setSearchParams(searchParams);
   }
 
@@ -15,10 +17,10 @@ function FilterByDay({ options }) {
     <Select
       options={options}
       onChange={handleChange}
-      value={currentSelectValue}
+      value={currentFilterValue}
       type="white"
     />
   );
 }
 
-export default FilterByDay;
+export default FilterBy;
