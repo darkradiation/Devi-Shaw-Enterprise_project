@@ -61,7 +61,7 @@ export function useRefreshSchemes() {
       await Promise.all(updates);
     },
     onSuccess: () => {
-      toast.success("Schemes refreshed successfully");
+      // toast.success("Schemes refreshed successfully");
       queryClient.invalidateQueries({
         queryKey: ["schemes_1", "schemes_2", "schemes_3"],
       });
