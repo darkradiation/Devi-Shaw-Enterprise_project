@@ -105,7 +105,7 @@ function RefillStockForm({ onCloseModal }) {
     refillStock(data.refillData);
     addStockHistory({ entry });
 
-    // onCloseModal?.();
+    onCloseModal?.();
   };
 
   const handleCloseForm = () => {

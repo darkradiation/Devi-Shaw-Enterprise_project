@@ -18,7 +18,7 @@ export function useUpdateStockItem() {
           // Refresh all schemes with updated stock data
           await refreshSchemes();
 
-          toast.success("Stock Item and all schemes updated successfully");
+          // toast.success("Stock Item and all schemes updated successfully");
           console.log("Stock Item and schemes successfully updated");
         } catch (error) {
           toast.error("Failed to refresh schemes after stock update");
