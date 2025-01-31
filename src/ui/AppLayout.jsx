@@ -17,7 +17,7 @@ const Background = styled.div`
 `;
 
 const StyledAppLayout = styled.div`
-  max-width: 40rem;
+  max-width: 40rem; // 36 if dashboard is clipping
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;

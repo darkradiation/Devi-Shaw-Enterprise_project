@@ -7,7 +7,7 @@ const StyledStat = styled.div`
   border-radius: var(--border-radius-md);
 
   margin: 0 0.1rem;
-  padding: 1rem;
+  padding: 1rem 0.7rem;
   display: grid;
   grid-template-columns: 4rem 1fr;
   grid-template-rows: auto auto;
@@ -27,8 +27,8 @@ const Icon = styled.div`
   background-color: var(--color-${(props) => props.color}-100);
 
   & svg {
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 2rem;
+    height: 2rem;
     color: var(--color-${(props) => props.color}-700);
   }
 `;

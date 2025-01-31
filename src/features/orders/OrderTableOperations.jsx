@@ -21,10 +21,10 @@ function OrderTableOperations() {
           </ButtonIcon>
           <SortBy
             options={[
-              { value: "order_date-desc", label: "Order date (desc)" },
-              { value: "order_date-asc", label: "Order date (asc)" },
-              { value: "bill_value-asc", label: "Bill price (asc)" },
-              { value: "bill_value-desc", label: "Bill price (desc)" },
+              { value: "order_date-desc", label: "order date (d)" },
+              { value: "order_date-asc", label: "order date (a)" },
+              { value: "bill_value-asc", label: "bill price (a)" },
+              { value: "bill_value-desc", label: "bill price (d)" },
             ]}
           />
           <FilterBy
