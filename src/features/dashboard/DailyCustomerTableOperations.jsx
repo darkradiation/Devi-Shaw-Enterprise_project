@@ -2,7 +2,6 @@ import { FaFilter } from "react-icons/fa";
 import Searchbar from "../../ui/Searchbar";
 import SortBy from "../../ui/SortBy";
 import Menus from "../../ui/Menus";
-import FilterByDay from "../../ui/FilterByDay";
 import ButtonIcon from "../../ui/ButtonIcon";
 import { GrPowerReset } from "react-icons/gr";
 import { useSearchParams } from "react-router-dom";
