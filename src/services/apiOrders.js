@@ -2,8 +2,13 @@ import supabase from "./supabase";
 import { PAGE_SIZE } from "../utils/constants";
 import { getToday } from "../utils/date";
 
-export async function getOrders({ filters, searchQuery, sortBy, page }) {
-  // console.log("filter", filters, "sortBY", sortBy, "page" + page);
+export async function getOrders({
+  filters,
+  searchQuery,
+  sortBy,
+  page,
+  filterByDay,
+}) {
   let query = supabase
     .from("orders")
     .select(
@@ -18,10 +23,31 @@ export async function getOrders({ filters, searchQuery, sortBy, page }) {
     });
   }
 
-  // SEARCH
-  if (searchQuery) {
-    query = query.ilike("customers.store_name", `%${searchQuery}%`);
-    // console.log("customers.store_name", `%${searchQuery}%`);
+  // COMBINED SEARCH AND DAY FILTER
+  if (searchQuery || (filterByDay && filterByDay !== "all")) {
+    let customerQuery = supabase.from("customers").select("id");
+
+    if (searchQuery) {
+      customerQuery = customerQuery.ilike("store_name", `%${searchQuery}%`);
+    }
+
+    if (filterByDay && filterByDay !== "all") {
+      customerQuery = customerQuery.eq("route_id", filterByDay);
+    }
+
+    const { data: customers, error: customerError } = await customerQuery;
+
+    if (customerError) {
+      console.error(customerError);
+      throw new Error("Couldn't fetch customers");
+    }
+
+    if (customers.length === 0) {
+      return { data: [], count: 0 };
+    }
+
+    const customerIds = customers.map((c) => c.id);
+    query = query.in("customer_id", customerIds);
   }
 
   // SORT
@@ -45,7 +71,6 @@ export async function getOrders({ filters, searchQuery, sortBy, page }) {
     throw new Error("Couldn't fetch orders");
   }
 
-  // console.log(data, count);
   return { data, count };
 }
 

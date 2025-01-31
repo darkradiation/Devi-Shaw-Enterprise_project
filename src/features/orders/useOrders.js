@@ -24,9 +24,9 @@ export function useOrders() {
     filters.push({ field: "is_paid", value: true });
   }
 
-  // SEARCH
-  // const searchQuery = searchParams.get("search") || "";
-  const searchQuery = "";
+  // Search for customer.store_name and filter by customer.route_id
+  const searchQuery = searchParams.get("search") || "";
+  const filterByDay = searchParams.get("filterByDay") || "all";
 
   // SORT
   const sortByRaw = searchParams.get("sortBy") || "id-desc";
@@ -42,8 +42,9 @@ export function useOrders() {
     data: { data: orders, count } = {},
     error,
   } = useQuery({
-    queryKey: ["orders", filters, searchQuery, sortBy, page],
-    queryFn: () => getOrders({ filters, searchQuery, sortBy, page }),
+    queryKey: ["orders", filters, searchQuery, sortBy, filterByDay, page],
+    queryFn: () =>
+      getOrders({ filters, searchQuery, sortBy, filterByDay, page }),
   });
 
   // PRE-FETCHING
@@ -51,16 +52,28 @@ export function useOrders() {
 
   if (page < pageCount)
     queryClient.prefetchQuery({
-      queryKey: ["orders", filters, searchQuery, sortBy, page + 1],
+      queryKey: ["orders", filters, searchQuery, sortBy, filterByDay, page + 1],
       queryFn: () =>
-        getOrders({ filters, searchQuery, sortBy, page: page + 1 }),
+        getOrders({
+          filters,
+          searchQuery,
+          sortBy,
+          filterByDay,
+          page: page + 1,
+        }),
     });
 
   if (page > 1)
     queryClient.prefetchQuery({
-      queryKey: ["orders", filters, searchQuery, sortBy, page - 1],
+      queryKey: ["orders", filters, searchQuery, sortBy, filterByDay, page - 1],
       queryFn: () =>
-        getOrders({ filters, searchQuery, sortBy, page: page - 1 }),
+        getOrders({
+          filters,
+          searchQuery,
+          sortBy,
+          filterByDay,
+          page: page - 1,
+        }),
     });
 
   return { isLoadingOrders: isLoading, orders, error, count };

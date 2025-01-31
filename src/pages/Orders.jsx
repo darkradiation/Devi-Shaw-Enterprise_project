@@ -27,7 +27,9 @@ function Orders() {
         </Modal>
       </Row>
 
-      <OrderTableOperations />
+      <Row type="horizontal">
+        <OrderTableOperations />
+      </Row>
 
       <Row>
         <OrderTable />

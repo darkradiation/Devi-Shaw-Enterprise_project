@@ -14,26 +14,8 @@ function OrderTable() {
   const isWorking = isLoadingOrders;
   if (isWorking) return <Spinner />;
 
-  // 1) FILTER
-  // const filterValue = searchParams.get("status") || "all";
-  // // console.log(filterValue);
-  // let filteredOrders;
-  // if (filterValue === "all") filteredOrders = orders;
-  // else if (filterValue === "paid")
-  //   filteredOrders = orders.filter(
-  //     (order) => order.is_paid === true && order.is_delivered === true
-  //   );
-  // else if (filterValue === "due")
-  //   filteredOrders = orders.filter(
-  //     (order) => order.is_paid === false && order.is_delivered === true
-  //   );
-  // else if (filterValue === "pending")
-  //   filteredOrders = orders.filter(
-  //     (order) => order.is_paid === false && order.is_delivered === false
-  //   );
-
-  // 2) SORT
-  // will implement server-side sorting instead of client-side because the orders object can be large .
+  // 1) SORT & FILTER by status is applied on server side through api params
+  // 2) Fiter by search terms
 
   return (
     <Table columns="1fr 7fr 4fr  1fr">
