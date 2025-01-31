@@ -1,14 +1,14 @@
 import Menus from "../../ui/Menus";
 import Row from "../../ui/Row";
-import CustomerTableOperations from "../customers/CustomerTableOperations";
 import DailyCustomerTable from "./DailyCustomerTable";
+import DailyCustomerTableOperations from "./DailyCustomerTableOperations";
 
 function TodayActivity() {
   return (
     <div>
       <Menus>
         <Row type="horizontal">
-          <CustomerTableOperations />
+          <DailyCustomerTableOperations />
         </Row>
         <Row>
           <DailyCustomerTable />

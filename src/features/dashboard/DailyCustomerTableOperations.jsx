@@ -7,7 +7,7 @@ import ButtonIcon from "../../ui/ButtonIcon";
 import { GrPowerReset } from "react-icons/gr";
 import { useSearchParams } from "react-router-dom";
 
-function CustomerTableOperations() {
+function DailyCustomerTableOperations() {
   const [searchParams, setSearchParams] = useSearchParams();
   return (
     <>
@@ -26,22 +26,10 @@ function CustomerTableOperations() {
               { value: "store_name-desc", label: "Alpha (desc)" },
             ]}
           />
-          <FilterByDay
-            options={[
-              { value: "all", label: "all days" },
-              { value: "1", label: "monday" },
-              { value: "2", label: "tuesday" },
-              { value: "3", label: "wednesday" },
-              { value: "4", label: "thursday" },
-              { value: "5", label: "friday" },
-              { value: "6", label: "saturday" },
-              { value: "7", label: "sunday" },
-            ]}
-          />
         </Menus.HList>
       </Menus.Menu>
     </>
   );
 }
 
-export default CustomerTableOperations;
+export default DailyCustomerTableOperations;

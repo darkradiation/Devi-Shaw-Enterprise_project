@@ -13,7 +13,7 @@ const Menu = styled.div`
 const StyledToggle = styled.button`
   background: none;
   border: none;
-  padding: 0.4rem;
+  padding: 0.4rem 1.4rem 0.4rem 1.4rem;
   border-radius: var(--border-radius-sm);
   transform: translateX(0.8rem);
   transition: all 0.2s;
@@ -41,7 +41,25 @@ const StyledList = styled.ul`
   top: ${(props) => props.position.y}px;
   z-index: 500;
 `;
+const StyledHList = styled.ul`
+  position: fixed;
 
+  background-color: var(--color-grey-0);
+  border: 1px solid var(--color-grey-200);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-md);
+
+  right: ${(props) => props.position.x}px;
+  top: ${(props) => props.position.y}px;
+  z-index: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.4rem;
+  gap: 0.4rem;
+`;
 const StyledButton = styled.button`
   width: 100%;
   text-align: left;
@@ -120,6 +138,20 @@ function List({ id, children }) {
   );
 }
 
+function HList({ id, children }) {
+  const { openId, position, close } = useContext(MenusContext);
+  const ref = useOutsideClick(close, false);
+
+  if (openId !== id) return null;
+
+  return createPortal(
+    <StyledHList position={position} ref={ref}>
+      {children}
+    </StyledHList>,
+    document.body
+  );
+}
+
 function Button({ children, icon, onClick }) {
   const { close } = useContext(MenusContext);
 
@@ -141,6 +173,7 @@ function Button({ children, icon, onClick }) {
 Menus.Menu = Menu;
 Menus.Toggle = Toggle;
 Menus.List = List;
+Menus.HList = HList;
 Menus.Button = Button;
 
 export default Menus;

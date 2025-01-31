@@ -28,8 +28,19 @@ function CustomerTable() {
   }
 
   // 2) FILTER
+  const routeDay = searchParams.get("filterByDay") || "all";
+
+  // First filter by day
+  let filteredByDay = sortedCustomers;
+  if (routeDay !== "all") {
+    filteredByDay = sortedCustomers.filter(
+      (customer) => customer.route_id === Number(routeDay)
+    );
+  }
+
+  // Then filter by search term
   const searchTerm = searchParams.get("search") || "";
-  const filteredCustomers = sortedCustomers.filter((customer) =>
+  const filteredCustomers = filteredByDay.filter((customer) =>
     customer.store_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
