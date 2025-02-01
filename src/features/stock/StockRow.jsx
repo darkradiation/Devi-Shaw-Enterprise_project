@@ -6,6 +6,8 @@ import Table from "../../ui/Table";
 import styled from "styled-components";
 import EditStockItem from "./EditStockItem";
 import { useDeleteStockItem } from "./useDeleteStockitem";
+import { useLoadNewStock } from "./useLoadNewStock";
+import { IoDownloadOutline } from "react-icons/io5";
 
 const Stacked2 = styled.div`
   display: flex;
@@ -37,9 +39,25 @@ function StockRow({ item }) {
     base_selling_price_per_pt,
     available_stock: { pt: available_pt, pcs: available_pcs },
     quantity_per_pt,
+    new_stock,
   } = item;
 
   const { isDeletingStockItem, deleteStockItem } = useDeleteStockItem();
+  const { loadNewStock, isLoadingNewStock } = useLoadNewStock();
+  const isWorking = isDeletingStockItem || isLoadingNewStock;
+
+  function getTotalNewStock(newStockArray) {
+    if (!Array.isArray(newStockArray) || newStockArray.length === 0) {
+      return 0;
+    }
+
+    return newStockArray.reduce((total, entry) => {
+      // Ensure the quantity is converted to a number, defaulting to 0 if it's missing.
+      const quantity = Number(entry.quantity) || 0;
+      return total + quantity;
+    }, 0);
+  }
+  const totalNewStock = getTotalNewStock(new_stock);
 
   return (
     <Table.Row role="row">
@@ -69,10 +87,18 @@ function StockRow({ item }) {
           </Stacked2>
         )}
         {available_pcs !== "0" && (
-          <Stacked2>
-            <span>Pcs - </span>
-            <span>{available_pcs}</span>
-          </Stacked2>
+          <>
+            <Stacked2>
+              <span>Pcs - </span>
+              <span>{available_pcs}</span>
+            </Stacked2>
+            {totalNewStock > 0 && (
+              <Stacked2>
+                <span>Hold - </span>
+                <span>{totalNewStock}</span>
+              </Stacked2>
+            )}
+          </>
         )}
         {available_pt === "0" && available_pcs === "0" && <span>--</span>}
       </Stacked1>
@@ -87,6 +113,12 @@ function StockRow({ item }) {
             <Modal.Open opens="delete">
               <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
             </Modal.Open>
+            <Menus.Button
+              icon={<IoDownloadOutline />}
+              onClick={() => loadNewStock(id)}
+            >
+              Load hold stock
+            </Menus.Button>
           </Menus.List>
           <Modal.Window name="edit">
             <EditStockItem item={item} />
@@ -94,7 +126,7 @@ function StockRow({ item }) {
           <Modal.Window name="delete">
             <ConfirmDelete
               resourceName="stock item"
-              disabled={isDeletingStockItem}
+              disabled={isWorking}
               onConfirm={() => deleteStockItem({ id })}
             />
           </Modal.Window>

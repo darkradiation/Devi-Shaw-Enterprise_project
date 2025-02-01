@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { useUpdateStockItem } from "../stock/useUpdateStockItem";
+import { useUpdateStockItem } from "./useUpdateStockItem";
 
 export function useRefillStock() {
   const queryClient = useQueryClient();
@@ -9,25 +9,56 @@ export function useRefillStock() {
   const { mutate: refillStock, isLoading: isRefillingStock } = useMutation({
     mutationFn: async (refillData) => {
       const updatePromises = Object.entries(refillData).map(
-        ([itemId, { refillQuantity = 0, buyingPrice }]) => {
+        ([itemId, { refillQuantity, buyingPrice }]) => {
+          if (refillQuantity === 0) return;
+
           const originalStock = queryClient
             .getQueryData(["stock"])
             .find((item) => item.id === Number(itemId));
-          const newQuantity =
-            Number(originalStock.available_stock.pt) + Number(refillQuantity);
+
           const newBuyingPrice = buyingPrice
             ? buyingPrice
             : originalStock.buying_price_per_pt;
+          const isPriceChanged =
+            newBuyingPrice !== originalStock.buying_price_per_pt;
 
-          // console.log(itemId, newQuantity, newBuyingPrice);
+          // Handle new_stock updates
+          const originalNewStock = originalStock.new_stock || [];
+          let updatedNewStock = originalNewStock;
+          let updatedAvailableStock = originalStock.available_stock;
+          let updatedBuyingPrice = originalStock.buying_price_per_pt;
+
+          if (
+            originalStock.available_stock.pt !== 0 ||
+            originalStock.available_stock.pcs !== 0 ||
+            isPriceChanged
+          ) {
+            updatedNewStock = [
+              ...originalNewStock,
+              { quantity: Number(refillQuantity), buyingPrice: newBuyingPrice },
+            ];
+          } else {
+            const newQuantity =
+              Number(originalStock.available_stock.pt) + Number(refillQuantity);
+            updatedAvailableStock = {
+              ...updatedAvailableStock,
+              pt: newQuantity,
+            };
+            updatedBuyingPrice = newBuyingPrice;
+          }
+
+          console.log(
+            itemId,
+            updatedAvailableStock,
+            updatedBuyingPrice,
+            updatedNewStock
+          );
           return updateStockItem({
             id: itemId,
             updated_stock: {
-              available_stock: {
-                ...originalStock.available_stock,
-                pt: newQuantity,
-              },
-              buying_price_per_pt: newBuyingPrice,
+              available_stock: updatedAvailableStock,
+              buying_price_per_pt: updatedBuyingPrice,
+              new_stock: updatedNewStock,
             },
           });
         }

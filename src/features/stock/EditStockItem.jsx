@@ -62,30 +62,30 @@ function EditStockItem({ item, onCloseModal }) {
       return;
     }
 
-    function checkValueChange(fieldName, defaultValue, newValue) {
-      if (defaultValue !== newValue) {
-        console.log(`${fieldName} changed`, defaultValue, newValue);
-      }
-    }
-    checkValueChange("Item name", defaultItemName, item_name);
-    checkValueChange(
-      "Quantity per pt",
-      defaultQuantityPerPt,
-      Number(quantity_per_pt)
-    );
-    checkValueChange("Mrp per pc", defaultMrpPerPc, Number(mrp_per_pc));
-    checkValueChange("Buying price", defaultBuyingPrice, Number(buying_price));
-    checkValueChange(
-      "Selling price",
-      defaultSellingPrice,
-      Number(selling_price)
-    );
-    checkValueChange("Available pt", defaultAvailablePt, Number(available_pt));
-    checkValueChange(
-      "Available pcs",
-      defaultAvailablePcs,
-      Number(available_pcs)
-    );
+    // function checkValueChange(fieldName, defaultValue, newValue) {
+    //   if (defaultValue !== newValue) {
+    //     console.log(`${fieldName} changed`, defaultValue, newValue);
+    //   }
+    // }
+    // checkValueChange("Item name", defaultItemName, item_name);
+    // checkValueChange(
+    //   "Quantity per pt",
+    //   defaultQuantityPerPt,
+    //   Number(quantity_per_pt)
+    // );
+    // checkValueChange("Mrp per pc", defaultMrpPerPc, Number(mrp_per_pc));
+    // checkValueChange("Buying price", defaultBuyingPrice, Number(buying_price));
+    // checkValueChange(
+    //   "Selling price",
+    //   defaultSellingPrice,
+    //   Number(selling_price)
+    // );
+    // checkValueChange("Available pt", defaultAvailablePt, Number(available_pt));
+    // checkValueChange(
+    //   "Available pcs",
+    //   defaultAvailablePcs,
+    //   Number(available_pcs)
+    // );
 
     const buying_price_per_pc = (
       Number(buying_price) / Number(quantity_per_pt)
@@ -106,12 +106,11 @@ function EditStockItem({ item, onCloseModal }) {
       available_stock: { pt: Number(available_pt), pcs: Number(available_pcs) },
     };
 
-    console.log(updated_stock);
+    // console.log(updated_stock);
     updateStockItem({ id, updated_stock });
     onCloseModal();
   }
   function onError(errors) {
-    console.log("errors");
     console.log(errors);
   }
   function handleCloseForm() {
@@ -139,7 +138,7 @@ function EditStockItem({ item, onCloseModal }) {
 
       <FormRow label="Pcs per pt" error={errors?.quantity_per_pt?.message}>
         <Input
-          type="number"
+          type="text"
           id="quantity_per_pt"
           defaultValue={defaultQuantityPerPt}
           disabled={isWorking}
@@ -151,7 +150,7 @@ function EditStockItem({ item, onCloseModal }) {
 
       <FormRow label="Mrp/pc" error={errors?.mrp_per_pc?.message}>
         <Input
-          type="number"
+          type="text"
           id="mrp_per_pc"
           defaultValue={defaultMrpPerPc}
           disabled={isWorking}
@@ -163,7 +162,7 @@ function EditStockItem({ item, onCloseModal }) {
 
       <FormRow label="Buying Price /pt" error={errors?.buying_price?.message}>
         <Input
-          type="number"
+          type="text"
           id="buying_price"
           defaultValue={defaultBuyingPrice}
           disabled={isWorking}
@@ -175,7 +174,7 @@ function EditStockItem({ item, onCloseModal }) {
 
       <FormRow label="Selling Price /pt" error={errors?.selling_price?.message}>
         <Input
-          type="number"
+          type="text"
           id="selling_price"
           defaultValue={defaultSellingPrice}
           disabled={isWorking}
@@ -190,7 +189,7 @@ function EditStockItem({ item, onCloseModal }) {
         error={errors?.available_pt?.message}
       >
         <Input
-          type="number"
+          type="text"
           id="available_pt"
           defaultValue={defaultAvailablePt}
           disabled={isWorking}
@@ -205,7 +204,7 @@ function EditStockItem({ item, onCloseModal }) {
         error={errors?.available_pcs?.message}
       >
         <Input
-          type="number"
+          type="text"
           id="available_pcs"
           defaultValue={defaultAvailablePcs}
           disabled={isWorking}
