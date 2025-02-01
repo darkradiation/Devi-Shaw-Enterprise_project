@@ -8,6 +8,7 @@ import EditStockItem from "./EditStockItem";
 import { useDeleteStockItem } from "./useDeleteStockitem";
 import { useLoadNewStock } from "./useLoadNewStock";
 import { IoDownloadOutline } from "react-icons/io5";
+import StockItemDetails from "./StockItemDetails";
 
 const Stacked2 = styled.div`
   display: flex;
@@ -61,49 +62,50 @@ function StockRow({ item }) {
 
   return (
     <Table.Row role="row">
-      <Stacked1>
-        <div>{item_name}</div>
-        <Stacked2>
-          <span>{quantity_per_pt}pcs</span>
-        </Stacked2>
-      </Stacked1>
-
-      <Stacked1>
-        <Stacked2>
-          <span>BP - </span>
-          <span>Rs.{buying_price_per_pt}</span>
-        </Stacked2>
-        <Stacked2>
-          <span>SP - </span>
-          <span>Rs.{base_selling_price_per_pt}</span>
-        </Stacked2>
-      </Stacked1>
-
-      <Stacked1>
-        {available_pt !== "0" && (
-          <Stacked2>
-            <span>Pt. - </span>
-            <span>{available_pt}</span>
-          </Stacked2>
-        )}
-        {available_pcs !== "0" && (
-          <>
+      <Modal>
+        <Modal.Open opens="details">
+          <Stacked1>
+            <div>{item_name}</div>
             <Stacked2>
-              <span>Pcs - </span>
-              <span>{available_pcs}</span>
+              <span>{quantity_per_pt}pcs</span>
             </Stacked2>
-            {totalNewStock > 0 && (
+          </Stacked1>
+        </Modal.Open>
+
+        <Modal.Open opens="details">
+          <Stacked1>
+            <Stacked2>
+              <span>BP - </span>
+              <span>Rs.{buying_price_per_pt}</span>
+            </Stacked2>
+            <Stacked2>
+              <span>SP - </span>
+              <span>Rs.{base_selling_price_per_pt}</span>
+            </Stacked2>
+          </Stacked1>
+        </Modal.Open>
+
+        <Modal.Open opens="details">
+          <Stacked1>
+            {available_pt !== "0" && (
               <Stacked2>
-                <span>Hold - </span>
-                <span>{totalNewStock}</span>
+                <span>Pt. - </span>
+                <span>
+                  {available_pt}
+                  {totalNewStock > 0 && `*`}
+                </span>
               </Stacked2>
             )}
-          </>
-        )}
-        {available_pt === "0" && available_pcs === "0" && <span>--</span>}
-      </Stacked1>
+            {available_pcs !== "0" && (
+              <Stacked2>
+                <span>Pcs - </span>
+                <span>{available_pcs}</span>
+              </Stacked2>
+            )}
+            {available_pt === "0" && available_pcs === "0" && <span>--</span>}
+          </Stacked1>
+        </Modal.Open>
 
-      <Modal>
         <Menus.Menu>
           <Menus.Toggle id={id} />
           <Menus.List id={id}>
@@ -120,6 +122,9 @@ function StockRow({ item }) {
               Load hold stock
             </Menus.Button>
           </Menus.List>
+          <Modal.Window name="details">
+            <StockItemDetails stockItem={item} />
+          </Modal.Window>
           <Modal.Window name="edit">
             <EditStockItem item={item} />
           </Modal.Window>
