@@ -163,7 +163,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
   };
 
   const updateOrderItem = (itemId, updates) => {
-    console.log(itemId, updates);
+    // console.log(itemId, updates);
     const existingItemIndex = newOrder.order_items.findIndex(
       (item) => item.item_id === itemId
     );

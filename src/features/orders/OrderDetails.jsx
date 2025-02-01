@@ -259,7 +259,7 @@ function OrderDetails({ order }) {
     return accumulator;
   }, []);
 
-  console.log(freeItems);
+  // console.log(freeItems);
 
   const noFreeItems = freeItems.every((item) => item.item_quantity === 0);
 
@@ -300,7 +300,7 @@ function OrderDetails({ order }) {
             <div>sp</div>
           </Table.Header>
           <Table.Body
-            data={orderItems}
+            data={orderItems.slice(1)}
             render={(item) => (
               <Table.Row role="row">
                 <div>{item.item_quantity}</div>
