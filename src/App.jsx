@@ -10,6 +10,7 @@ import AppLayout from "./ui/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
 import Customers from "./pages/Customers";
+import RoutesPage from "./pages/Routes";
 import Orders from "./pages/Orders";
 import Stock from "./pages/Stock";
 import Settings from "./pages/Settings";
@@ -47,6 +48,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="account" element={<Account />} />
               <Route path="customers" element={<Customers />} />
+              <Route path="routes" element={<RoutesPage />} />
               <Route path="orders" element={<Orders />} />
               <Route path="stock" element={<Stock />} />
               <Route path="schemes" element={<Schemes />} />

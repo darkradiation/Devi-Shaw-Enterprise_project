@@ -1,28 +1,41 @@
-import Row from "../ui/Row";
-import Heading from "../ui/Heading";
+import { NavLink } from "react-router-dom";
+import { TiThMenu } from "react-icons/ti";
+import { RiRoadMapLine, RiUserAddLine } from "react-icons/ri";
+
 import CustomerTable from "../features/customers/CustomerTable";
 import CustomerTableOperations from "../features/customers/CustomerTableOperations";
-import Modal from "../ui/Modal";
 import CreateCustomerForm from "../features/customers/CreateCustomerForm";
-import ButtonIcon from "../ui/ButtonIcon";
+
+import Row from "../ui/Row";
+import Heading from "../ui/Heading";
+import Modal from "../ui/Modal";
 import Menus from "../ui/Menus";
-import { RiUserAddLine } from "react-icons/ri";
 
 function Customers() {
   return (
     <Menus>
       <Row type="horizontal">
         <Heading as="h4">Customers</Heading>
-        <Modal>
-          <Modal.Open opens="addCustomer">
-            <ButtonIcon>
-              <RiUserAddLine />
-            </ButtonIcon>
-          </Modal.Open>
 
-          <Modal.Window name="addCustomer">
-            <CreateCustomerForm />
-          </Modal.Window>
+        <Modal>
+          <Menus.Menu>
+            <Menus.Toggle id={"customers"} icon={<TiThMenu />} />
+            <Menus.List id={"customers"}>
+              <Modal.Open opens="addCustomer">
+                <Menus.Button icon={<RiUserAddLine />}>
+                  Add Customer
+                </Menus.Button>
+              </Modal.Open>
+
+              <Menus.Button icon={<RiRoadMapLine />}>
+                <NavLink to="/routes">Routes</NavLink>
+              </Menus.Button>
+            </Menus.List>
+
+            <Modal.Window name="addCustomer">
+              <CreateCustomerForm />
+            </Modal.Window>
+          </Menus.Menu>
         </Modal>
       </Row>
 
