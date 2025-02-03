@@ -1,17 +1,15 @@
 import styled from "styled-components";
 import { add, format } from "date-fns";
-import { HiPencil, HiTrash } from "react-icons/hi2";
+import { HiPencil } from "react-icons/hi2";
 import { BiDetail } from "react-icons/bi";
 
 import Table from "../../ui/Table";
 import Modal from "../../ui/Modal";
 import Menus from "../../ui/Menus";
-import ConfirmDelete from "../../ui/ConfirmDelete";
 import OrderDetails from "./OrderDetails";
 import ConfirmUpdate from "./ConfirmUpdate";
 import ConfirmPayment from "./ConfirmPayment";
 
-import { useDeleteOrder } from "./useDeleteOrder";
 import { useUpdateOrder } from "./useUpdateOrder";
 import { ImCancelCircle } from "react-icons/im";
 import { useCancelOrder } from "./useCancelOrder";
@@ -47,9 +45,6 @@ const Stacked2 = styled.div`
   flex-direction: column;
   align-items: self-start;
   gap: 0.2rem;
-  /* & div:first-child {
-    padding-left: 1rem;
-  } */
   & div:last-child {
     font-size: 1.15rem;
   }
@@ -69,16 +64,13 @@ function OrderRow({ order }) {
     is_paid,
     bill_value,
     outstanding_payment,
-    payments,
-    // customers: { store_name },
   } = order;
 
   const store_name = order.customers?.store_name;
 
-  const { isDeletingOrder, deleteOrder } = useDeleteOrder();
   const { updateOrder, isUpdatingOrder } = useUpdateOrder();
   const { cancelOrder, isCancellingOrder } = useCancelOrder();
-  const isWorking = isDeletingOrder || isUpdatingOrder || isCancellingOrder;
+  const isWorking = isUpdatingOrder || isCancellingOrder;
 
   if (isWorking) return;
 
@@ -95,7 +87,7 @@ function OrderRow({ order }) {
 
   function makePayment({ amount }) {
     if (!amount) return null;
-    if (amount > outstanding_payment) return null; // show a toast
+    if (amount > outstanding_payment) return null;
 
     let modifiedOrder = { ...order };
 

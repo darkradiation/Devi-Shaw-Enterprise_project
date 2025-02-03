@@ -2,19 +2,15 @@ import styled from "styled-components";
 import { add, format } from "date-fns";
 import { MdCall } from "react-icons/md";
 import { ImCancelCircle, ImLocation } from "react-icons/im";
-import { HiPencil, HiTrash } from "react-icons/hi2";
+import { HiPencil } from "react-icons/hi2";
 import { FaCartPlus } from "react-icons/fa";
-import { BiDetail } from "react-icons/bi";
 
 import Heading from "../../ui/Heading";
 import Table from "../../ui/Table";
 import ButtonIcon from "../../ui/ButtonIcon";
 import Modal from "../../ui/Modal";
 import CreateOrderForm from "./CreateOrderForm";
-import ConfirmDelete from "../../ui/ConfirmDelete";
-import CustomerDetails from "../customers/CustomerDetails";
 
-import { useDeleteOrder } from "./useDeleteOrder";
 import ConfirmUpdate from "./ConfirmUpdate";
 import { useCancelOrder } from "./useCancelOrder";
 import { useUpdateOrder } from "./useUpdateOrder";
