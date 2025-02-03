@@ -10,15 +10,14 @@ import AppLayout from "./ui/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
 import Customers from "./pages/Customers";
-import Customer from "./pages/Customer";
 import Orders from "./pages/Orders";
-import Order from "./pages/Order";
 import Stock from "./pages/Stock";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import PageNotFound from "./pages/PageNotFound";
 import Schemes from "./pages/Schemes";
 import ProtectedRoute from "./ui/ProtectedRoute";
+import Suppliers from "./pages/Suppliers";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,11 +47,10 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="account" element={<Account />} />
               <Route path="customers" element={<Customers />} />
-              <Route path="customers/:customer_id" element={<Customer />} />
               <Route path="orders" element={<Orders />} />
-              <Route path="orders/:order_id" element={<Order />} />
               <Route path="stock" element={<Stock />} />
               <Route path="schemes" element={<Schemes />} />
+              <Route path="suppliers" element={<Suppliers />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 

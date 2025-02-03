@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import { TiThMenu } from "react-icons/ti";
 import { IoPeople } from "react-icons/io5";
 import { FaFill, FaHistory } from "react-icons/fa";
@@ -11,6 +12,7 @@ import Row from "../ui/Row";
 import RefillStockForm from "../features/stock/RefillStockForm";
 import StockTable from "../features/stock/StockTable";
 import CreateNewStockItem from "../features/stock/CreateNewStockItem";
+import Suppliers from "./Suppliers";
 
 function Stocks() {
   return (
@@ -32,15 +34,20 @@ function Stocks() {
               <Modal.Open opens="stockHistory">
                 <Menus.Button icon={<FaHistory />}>Stock History</Menus.Button>
               </Modal.Open>
-              <Modal.Open opens="suppliers">
-                <Menus.Button icon={<IoPeople />}>Suppliers</Menus.Button>
-              </Modal.Open>
+              <Menus.Button icon={<IoPeople />}>
+                <NavLink to="/suppliers">Suppliers</NavLink>
+              </Menus.Button>
             </Menus.List>
+
             <Modal.Window name="refillStock">
               <RefillStockForm />
             </Modal.Window>
             <Modal.Window name="addStockItem">
               <CreateNewStockItem />
+            </Modal.Window>
+            <Modal.Window name="stockHistory"></Modal.Window>
+            <Modal.Window name="suppliers">
+              <Suppliers />
             </Modal.Window>
           </Menus.Menu>
         </Modal>
