@@ -214,7 +214,7 @@ function EditCustomer({ customer, onCloseModal }) {
         <Textarea
           type="text"
           id="store_geoLink"
-          defaultValue=""
+          defaultValue={defaultStoreGeoLink}
           disabled={isWorking}
           {...register("store_geoLink")}
         />
