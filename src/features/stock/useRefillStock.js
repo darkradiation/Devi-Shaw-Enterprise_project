@@ -29,15 +29,10 @@ export function useRefillStock() {
           let updatedBuyingPrice = originalStock.buying_price_per_pt;
 
           if (
-            originalStock.available_stock.pt !== 0 ||
-            originalStock.available_stock.pcs !== 0 ||
-            isPriceChanged
+            (originalStock.available_stock.pt === 0 &&
+              originalStock.available_stock.pcs === 0) ||
+            !isPriceChanged
           ) {
-            updatedNewStock = [
-              ...originalNewStock,
-              { quantity: Number(refillQuantity), buyingPrice: newBuyingPrice },
-            ];
-          } else {
             const newQuantity =
               Number(originalStock.available_stock.pt) + Number(refillQuantity);
             updatedAvailableStock = {
@@ -45,6 +40,11 @@ export function useRefillStock() {
               pt: newQuantity,
             };
             updatedBuyingPrice = newBuyingPrice;
+          } else {
+            updatedNewStock = [
+              ...originalNewStock,
+              { quantity: Number(refillQuantity), buyingPrice: newBuyingPrice },
+            ];
           }
 
           console.log(
