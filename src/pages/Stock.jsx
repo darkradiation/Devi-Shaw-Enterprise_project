@@ -31,11 +31,11 @@ function Stocks() {
               <Modal.Open opens="refillStock">
                 <Menus.Button icon={<FaFill />}>Refill Stock</Menus.Button>
               </Modal.Open>
-              <Modal.Open opens="stockHistory">
-                <Menus.Button icon={<FaHistory />}>Stock History</Menus.Button>
-              </Modal.Open>
               <Menus.Button icon={<IoPeople />}>
                 <NavLink to="/suppliers">Suppliers</NavLink>
+              </Menus.Button>
+              <Menus.Button icon={<FaHistory />}>
+                <NavLink to="/stock_history">Stock History</NavLink>
               </Menus.Button>
             </Menus.List>
 
@@ -44,10 +44,6 @@ function Stocks() {
             </Modal.Window>
             <Modal.Window name="addStockItem">
               <CreateNewStockItem />
-            </Modal.Window>
-            <Modal.Window name="stockHistory"></Modal.Window>
-            <Modal.Window name="suppliers">
-              <Suppliers />
             </Modal.Window>
           </Menus.Menu>
         </Modal>

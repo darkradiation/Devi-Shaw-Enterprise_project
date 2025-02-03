@@ -19,6 +19,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Schemes from "./pages/Schemes";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import Suppliers from "./pages/Suppliers";
+import StockHistory from "./pages/StockHistory";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,6 +54,7 @@ function App() {
               <Route path="stock" element={<Stock />} />
               <Route path="schemes" element={<Schemes />} />
               <Route path="suppliers" element={<Suppliers />} />
+              <Route path="stock_history" element={<StockHistory />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 
