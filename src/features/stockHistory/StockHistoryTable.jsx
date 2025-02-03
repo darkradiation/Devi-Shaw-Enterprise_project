@@ -10,7 +10,7 @@ function StockHistoryTable() {
   if (isLoadingStockHistory) return <Spinner />;
 
   return (
-    <Table columns="1fr 2fr 3fr 3fr 1fr">
+    <Table columns="1fr 4fr 5fr 5fr 1fr">
       <Table.Header>
         <div>ID</div>
         <div>Date</div>
