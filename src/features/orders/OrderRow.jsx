@@ -93,27 +93,6 @@ function OrderRow({ order }) {
     updateOrder({ id, updated_order: modifiedOrder });
   }
 
-  // function makePayment({ amount }) {
-  //   if (!amount) return null;
-  //   let modifiedOrder;
-  //   if (amount < outstanding_payment) {
-  //     modifiedOrder = {
-  //       ...order,
-  //       outstanding_payment: outstanding_payment - amount,
-  //     };
-  //   }
-  //   if (amount === outstanding_payment) {
-  //     modifiedOrder = {
-  //       ...order,
-  //       is_paid: true,
-  //       outstanding_payment: 0,
-  //       payment_date: fromToday(0),
-  //     };
-  //   }
-  //   delete modifiedOrder["customers"];
-  //   updateOrder({ id, updated_order: modifiedOrder });
-  // }
-
   function makePayment({ amount }) {
     if (!amount) return null;
     if (amount > outstanding_payment) return null; // show a toast
@@ -196,9 +175,6 @@ function OrderRow({ order }) {
                 <Menus.Button icon={<HiPencil />}>{action}</Menus.Button>
               </Modal.Open>
             )}
-            <Modal.Open opens="delete">
-              <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
-            </Modal.Open>
           </Menus.List>
           <Modal.Window name="details">
             <OrderDetails order={order} />
@@ -228,15 +204,6 @@ function OrderRow({ order }) {
               disabled={isWorking}
               onConfirm={() => {
                 cancelOrder({ order });
-              }}
-            />
-          </Modal.Window>
-          <Modal.Window name="delete">
-            <ConfirmDelete
-              resourceName="order"
-              disabled={isWorking}
-              onConfirm={() => {
-                deleteOrder({ id });
               }}
             />
           </Modal.Window>

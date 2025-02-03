@@ -225,8 +225,8 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     console.log(modifiedOrderAAEC);
     const modifiedOrderACOV = calculateOrderValues(modifiedOrderAAEC);
     console.log(modifiedOrderACOV);
-    // addOrder({ new_order: newOrder });
-    // handleCloseForm();
+    addOrder({ new_order: modifiedOrderACOV });
+    handleCloseForm();
   }
 
   function onError(errors) {

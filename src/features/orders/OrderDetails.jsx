@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { format } from "date-fns";
+import { add, format } from "date-fns";
 import { MdCall } from "react-icons/md";
-import { ImLocation } from "react-icons/im";
-import { HiTrash } from "react-icons/hi2";
+import { ImCancelCircle, ImLocation } from "react-icons/im";
+import { HiPencil, HiTrash } from "react-icons/hi2";
 import { FaCartPlus } from "react-icons/fa";
 import { BiDetail } from "react-icons/bi";
 
@@ -15,6 +15,10 @@ import ConfirmDelete from "../../ui/ConfirmDelete";
 import CustomerDetails from "../customers/CustomerDetails";
 
 import { useDeleteOrder } from "./useDeleteOrder";
+import ConfirmUpdate from "./ConfirmUpdate";
+import { useCancelOrder } from "./useCancelOrder";
+import { useUpdateOrder } from "./useUpdateOrder";
+import ConfirmPayment from "./ConfirmPayment";
 
 const StyledOrderDetailsComponent = styled.div`
   /* width: 75vw; */
@@ -200,6 +204,12 @@ const YellowTag = styled.div`
   color: var(--color-yellow-700);
 `;
 
+function fromToday(numDays, withTime = false) {
+  const date = add(new Date(), { days: numDays });
+  if (!withTime) date.setUTCHours(0, 0, 0, 0);
+  return date.toISOString().slice(0, -1);
+}
+
 function OrderDetails({ order }) {
   const {
     id,
@@ -229,10 +239,61 @@ function OrderDetails({ order }) {
     effective_total_selling_price,
     profit,
   } = order;
-  const { isDeletingOrder, deleteOrder } = useDeleteOrder();
+  const { cancelOrder, isCancellingOrder } = useCancelOrder();
+  const { updateOrder, isUpdatingOrder } = useUpdateOrder();
+  const isWorking = isUpdatingOrder || isCancellingOrder;
 
   const status = is_delivered ? (is_paid ? "paid" : "due") : "pending";
   const tag = is_delivered ? (is_paid ? "green" : "red") : "blue";
+
+  const action = is_delivered
+    ? is_paid
+      ? ""
+      : "Make payment"
+    : "Mark delivered";
+  const confirmation = is_delivered
+    ? is_paid
+      ? ""
+      : "the bill has been paid by the customer in full"
+    : "the entire order is delivered to the customer";
+
+  const isCancellable = !is_delivered;
+
+  function markDelivered() {
+    const modifiedOrder = {
+      ...order,
+      is_delivered: true,
+      outstanding_payment: bill_value,
+      delivery_date: fromToday(0),
+    };
+    delete modifiedOrder["customers"];
+    updateOrder({ id, updated_order: modifiedOrder });
+  }
+
+  function makePayment({ amount }) {
+    if (!amount) return null;
+    if (amount > outstanding_payment) return null; // show a toast
+
+    let modifiedOrder = { ...order };
+
+    if (!modifiedOrder.payments) {
+      modifiedOrder.payments = [];
+    }
+
+    const paymentDate = fromToday(0);
+    modifiedOrder.payments.push({ amount, date: paymentDate });
+
+    if (amount < outstanding_payment) {
+      modifiedOrder.outstanding_payment = outstanding_payment - amount;
+    } else if (amount === outstanding_payment) {
+      modifiedOrder.is_paid = true;
+      modifiedOrder.outstanding_payment = 0;
+      modifiedOrder.payment_date = paymentDate;
+    }
+
+    delete modifiedOrder["customers"];
+    updateOrder({ id, updated_order: modifiedOrder });
+  }
 
   const freeItems = order.order_items.reduce((accumulator, orderItem) => {
     if (orderItem.free_items && orderItem.free_items.length > 0) {
@@ -262,6 +323,8 @@ function OrderDetails({ order }) {
   // console.log(freeItems);
 
   const noFreeItems = freeItems.every((item) => item.item_quantity === 0);
+  const filteredOrderItems =
+    orderItems[0].id === 0 ? orderItems.slice(1) : orderItems;
 
   const handleLocate = () => {
     if (!store_geoLink && !store_address && !store_name) return;
@@ -300,7 +363,7 @@ function OrderDetails({ order }) {
             <div>sp</div>
           </Table.Header>
           <Table.Body
-            data={orderItems.slice(1)}
+            data={filteredOrderItems}
             render={(item) => (
               <Table.Row role="row">
                 <div>{item.item_quantity}</div>
@@ -431,11 +494,27 @@ function OrderDetails({ order }) {
           <ImLocation />
         </ButtonIcon>
 
-        <Modal.Open opens="details">
-          <ButtonIcon size="lg">
-            <BiDetail />
-          </ButtonIcon>
-        </Modal.Open>
+        {isCancellable && (
+          <Modal.Open opens="cancel">
+            <ButtonIcon>
+              <ImCancelCircle />
+            </ButtonIcon>
+          </Modal.Open>
+        )}
+        {action === "Mark delivered" && (
+          <Modal.Open opens="markDelivered">
+            <ButtonIcon>
+              <HiPencil />
+            </ButtonIcon>
+          </Modal.Open>
+        )}
+        {action === "Make payment" && (
+          <Modal.Open opens="makePayment">
+            <ButtonIcon>
+              <HiPencil />
+            </ButtonIcon>
+          </Modal.Open>
+        )}
 
         <Modal.Open opens="order">
           <ButtonIcon size="lg">
@@ -443,27 +522,37 @@ function OrderDetails({ order }) {
           </ButtonIcon>
         </Modal.Open>
 
-        <Modal.Open opens="delete">
-          <ButtonIcon size="lg">
-            <HiTrash />
-          </ButtonIcon>
-        </Modal.Open>
-
-        <Modal.Window opens="details">
-          <CustomerDetails customer={order.customers} id={customer_id} />
-        </Modal.Window>
-
         <Modal.Window opens="order">
           <CreateOrderForm store_id={customer_id} />
         </Modal.Window>
 
-        <Modal.Window opens="delete">
-          <ConfirmDelete
-            resourceName="order"
-            disabled={isDeletingOrder}
+        <Modal.Window opens="cancel">
+          <ConfirmUpdate
+            task={"Cancel"}
+            orderId={id}
+            confirmation={"you want to cancel the order !!"}
+            disabled={isWorking}
             onConfirm={() => {
-              deleteOrder({ id });
+              cancelOrder({ order });
             }}
+          />
+        </Modal.Window>
+
+        <Modal.Window name="markDelivered">
+          <ConfirmUpdate
+            task={"Update"}
+            orderId={id}
+            confirmation={confirmation}
+            disabled={isWorking}
+            onConfirm={markDelivered}
+          />
+        </Modal.Window>
+        <Modal.Window name="makePayment">
+          <ConfirmPayment
+            orderId={id}
+            outstanding_payment={outstanding_payment}
+            disabled={isWorking}
+            onConfirm={makePayment}
           />
         </Modal.Window>
       </IconBox>
