@@ -49,7 +49,6 @@ const StyledStoreImage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background-color: red; */
 
   & :img {
     width: 100%;
@@ -57,13 +56,15 @@ const StyledStoreImage = styled.div`
   }
 `;
 const StyledOwnerImage = styled.div`
-  width: 10rem;
-  height: 10rem;
   position: absolute;
+  width: 10rem;
+  /* height: 10rem;
   left: 1rem;
   bottom: 1rem;
   border-radius: 50%;
-  overflow: hidden;
+  overflow: hidden; */
+  left: 3%;
+  bottom: -3%;
 `;
 
 const DataBox = styled.div`

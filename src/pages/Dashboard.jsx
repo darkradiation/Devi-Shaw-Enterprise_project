@@ -6,9 +6,9 @@ import DashboardFilter from "../features/dashboard/DashboardFilter";
 function Dashboard() {
   return (
     <>
-      <Row type="horizontal">
+      {/* <Row type="horizontal">
         <Heading as="h4">Dashboard</Heading>
-      </Row>
+      </Row> */}
       <Row>
         <DashboardFilter />
       </Row>
