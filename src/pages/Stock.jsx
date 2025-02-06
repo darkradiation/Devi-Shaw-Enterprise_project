@@ -12,7 +12,6 @@ import Row from "../ui/Row";
 import RefillStockForm from "../features/stock/RefillStockForm";
 import StockTable from "../features/stock/StockTable";
 import CreateNewStockItem from "../features/stock/CreateNewStockItem";
-import Suppliers from "./Suppliers";
 
 function Stocks() {
   return (

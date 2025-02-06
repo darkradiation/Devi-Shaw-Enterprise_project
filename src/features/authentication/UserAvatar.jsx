@@ -3,17 +3,13 @@ import { useUser } from "./useUser";
 
 const StyledUserAvatar = styled.div`
   display: flex;
-  gap: 1.2rem;
   align-items: center;
-  font-weight: 500;
-  font-size: 1.4rem;
-  color: var(--color-grey-600);
 `;
 
 const Avatar = styled.img`
   display: block;
-  width: 4rem;
-  width: 3.6rem;
+  width: 2.9rem;
+  width: 2.9rem;
   aspect-ratio: 1;
   object-fit: cover;
   object-position: center;
@@ -30,8 +26,6 @@ function UserAvatar() {
         src={avatar || "default-user.jpg"}
         alt={`Avatar of ${fullName}`}
       />
-
-      <span>{fullName}</span>
     </StyledUserAvatar>
   );
 }

@@ -3,8 +3,7 @@ import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
-
-import { useUpdateUser } from "./useUpdateUser";
+import { useSignup } from "./useSignup";
 import Heading from "../../ui/Heading";
 import styled from "styled-components";
 
@@ -14,17 +13,19 @@ const StackedButtons = styled.div`
   gap: 1rem;
 `;
 
-function UpdatePasswordForm({ onCloseModal }) {
+// Email regex: /\S+@\S+\.\S+/
+
+function SignupForm({ onCloseModal }) {
+  const { signup, isLoading } = useSignup();
   const { register, handleSubmit, formState, getValues, reset } = useForm();
+
   const { errors } = formState;
 
-  const { updateUser, isUpdating } = useUpdateUser();
-
-  function onSubmit({ password }) {
-    updateUser(
-      { password },
+  function onSubmit({ fullName, email, password }) {
+    signup(
+      { fullName, email, password },
       {
-        onSuccess: () => {
+        onSettled: () => {
           reset();
           onCloseModal();
         },
@@ -39,17 +40,40 @@ function UpdatePasswordForm({ onCloseModal }) {
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow>
-        <Heading as="h4">Update Password</Heading>
+        <Heading as="h4">SignUp new user</Heading>
       </FormRow>
+      <FormRow label="Full name" error={errors?.fullName?.message}>
+        <Input
+          type="text"
+          id="fullName"
+          disabled={isLoading}
+          {...register("fullName", { required: "This field is required" })}
+        />
+      </FormRow>
+
+      <FormRow label="Email address" error={errors?.email?.message}>
+        <Input
+          type="email"
+          id="email"
+          disabled={isLoading}
+          {...register("email", {
+            required: "This field is required",
+            pattern: {
+              value: /\S+@\S+\.\S+/,
+              message: "Please provide a valid email address",
+            },
+          })}
+        />
+      </FormRow>
+
       <FormRow
-        label="New password (min 8 chars)"
+        label="Password (min 8 characters)"
         error={errors?.password?.message}
       >
         <Input
           type="password"
           id="password"
-          autoComplete="current-password"
-          disabled={isUpdating}
+          disabled={isLoading}
           {...register("password", {
             required: "This field is required",
             minLength: {
@@ -60,37 +84,34 @@ function UpdatePasswordForm({ onCloseModal }) {
         />
       </FormRow>
 
-      <FormRow
-        label="Confirm new password"
-        error={errors?.passwordConfirm?.message}
-      >
+      <FormRow label="Repeat password" error={errors?.passwordConfirm?.message}>
         <Input
           type="password"
-          autoComplete="new-password"
           id="passwordConfirm"
-          disabled={isUpdating}
+          disabled={isLoading}
           {...register("passwordConfirm", {
             required: "This field is required",
             validate: (value) =>
-              getValues().password === value || "Passwords need to match",
+              value === getValues().password || "Passwords need to match",
           })}
         />
       </FormRow>
+
       <FormRow>
         <StackedButtons>
           <Button
             variation="secondary"
             type="reset"
-            disabled={isUpdating}
+            disabled={isLoading}
             onClick={() => handleCloseForm()}
           >
             Cancel
           </Button>
-          <Button disabled={isUpdating}>Update</Button>
+          <Button disabled={isLoading}>Create new user</Button>
         </StackedButtons>
       </FormRow>
     </Form>
   );
 }
 
-export default UpdatePasswordForm;
+export default SignupForm;
