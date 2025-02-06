@@ -124,7 +124,8 @@ function OrderRow({ order }) {
       : "the bill has been paid by the customer in full"
     : "the entire order is delivered to the customer";
 
-  const isCancellable = !is_delivered;
+  // const isCancellable = !is_delivered;
+  const isCancellable = !is_paid; // for testing purpose
 
   return (
     <Table.Row role="row">
