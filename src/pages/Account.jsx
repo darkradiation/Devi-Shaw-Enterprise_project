@@ -12,6 +12,7 @@ import UpdateUserDataForm from "../features/authentication/UpdateUserDataForm";
 
 import { useLogout } from "../features/authentication/useLogout";
 import { useUser } from "../features/authentication/useUser";
+import { useIsAdmin } from "../features/authentication/useIsAdmin";
 const StyledName = styled.div`
   padding: 1rem;
   font-size: 1.7rem;
@@ -25,6 +26,7 @@ function Account() {
   const { user } = useUser();
   const { fullName } = user.user_metadata;
   const { logout, isLoading } = useLogout();
+  const { isAdmin } = useIsAdmin();
 
   return (
     <Menus>
@@ -44,9 +46,13 @@ function Account() {
                 Update password
               </Menus.Button>
             </Modal.Open>
-            <Modal.Open opens="sign_up">
-              <Menus.Button icon={<BiUserPlus />}>SignUp new user</Menus.Button>
-            </Modal.Open>
+            {isAdmin && (
+              <Modal.Open opens="sign_up">
+                <Menus.Button icon={<BiUserPlus />}>
+                  SignUp new user
+                </Menus.Button>
+              </Modal.Open>
+            )}
             <Menus.Button
               icon={<BiLogOut />}
               onClick={() => logout()}
