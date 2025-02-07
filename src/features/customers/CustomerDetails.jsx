@@ -8,6 +8,7 @@ import Heading from "../../ui/Heading";
 import Modal from "../../ui/Modal";
 import Spinner from "../../ui/Spinner";
 import ButtonIcon from "../../ui/ButtonIcon";
+import ButtonIconWithPermission from "../../ui/ButtonIconWithPermission";
 import CreateOrderForm from "../orders/CreateOrderForm";
 import EditCustomer from "./EditCustomer";
 import ConfirmDelete from "../../ui/ConfirmDelete";
@@ -220,21 +221,21 @@ function CustomerDetails({ id, customer }) {
         </ButtonIcon>
 
         <Modal.Open opens="order">
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <FaCartPlus />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Open opens="edit">
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <HiPencil />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Open opens="delete">
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <HiTrash />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Window opens="order">

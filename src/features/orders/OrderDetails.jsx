@@ -7,6 +7,7 @@ import { FaCartPlus } from "react-icons/fa";
 
 import Heading from "../../ui/Heading";
 import Table from "../../ui/Table";
+import ButtonIconWithPermission from "../../ui/ButtonIconWithPermission";
 import ButtonIcon from "../../ui/ButtonIcon";
 import Modal from "../../ui/Modal";
 import CreateOrderForm from "./CreateOrderForm";
@@ -492,30 +493,30 @@ function OrderDetails({ order }) {
 
         {isCancellable && (
           <Modal.Open opens="cancel">
-            <ButtonIcon>
+            <ButtonIconWithPermission checkAccess={true}>
               <ImCancelCircle />
-            </ButtonIcon>
+            </ButtonIconWithPermission>
           </Modal.Open>
         )}
         {action === "Mark delivered" && (
           <Modal.Open opens="markDelivered">
-            <ButtonIcon>
+            <ButtonIconWithPermission checkAccess={true}>
               <HiPencil />
-            </ButtonIcon>
+            </ButtonIconWithPermission>
           </Modal.Open>
         )}
         {action === "Make payment" && (
           <Modal.Open opens="makePayment">
-            <ButtonIcon>
+            <ButtonIconWithPermission checkAccess={true}>
               <HiPencil />
-            </ButtonIcon>
+            </ButtonIconWithPermission>
           </Modal.Open>
         )}
 
         <Modal.Open opens="order">
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <FaCartPlus />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Window opens="order">

@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
 import { useOutsideClick } from "../hooks/useOutsideClick";
+import { useHasEditPermission } from "../features/authentication/useHasEditPermission";
+import toast from "react-hot-toast";
 
 const Menu = styled.div`
   display: flex;
@@ -152,17 +154,31 @@ function HList({ id, children }) {
   );
 }
 
-function Button({ children, icon, onClick }) {
+// function Button({ children, icon, onClick, disabled }) {
+//   const { close } = useContext(MenusContext);
+
+//   function handleClick() {
+//     onClick?.();
+//     close();
+//   }
+function Button({ children, icon, onClick, disabled, checkAccess = false }) {
   const { close } = useContext(MenusContext);
+  const { hasEditPermission } = useHasEditPermission(); // retrieve permission
 
   function handleClick() {
+    // If the button is marked as an edit button, check permissions first
+    if (checkAccess && !hasEditPermission) {
+      console.log(hasEditPermission);
+      toast.error("User does not have permission to perform this action.");
+      return;
+    }
     onClick?.();
     close();
   }
 
   return (
     <li>
-      <StyledButton onClick={handleClick}>
+      <StyledButton onClick={handleClick} disabled={disabled}>
         {icon}
         <span>{children}</span>
       </StyledButton>

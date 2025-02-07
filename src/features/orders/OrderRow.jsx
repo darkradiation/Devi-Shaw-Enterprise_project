@@ -155,17 +155,23 @@ function OrderRow({ order }) {
             </Modal.Open>
             {isCancellable && (
               <Modal.Open opens="cancel">
-                <Menus.Button icon={<ImCancelCircle />}>Cancel</Menus.Button>
+                <Menus.Button icon={<ImCancelCircle />} checkAccess={true}>
+                  Cancel
+                </Menus.Button>
               </Modal.Open>
             )}
             {action === "Mark delivered" && (
               <Modal.Open opens="markDelivered">
-                <Menus.Button icon={<HiPencil />}>{action}</Menus.Button>
+                <Menus.Button icon={<HiPencil />} checkAccess={true}>
+                  {action}
+                </Menus.Button>
               </Modal.Open>
             )}
             {action === "Make payment" && (
               <Modal.Open opens="makePayment">
-                <Menus.Button icon={<HiPencil />}>{action}</Menus.Button>
+                <Menus.Button icon={<HiPencil />} checkAccess={true}>
+                  {action}
+                </Menus.Button>
               </Modal.Open>
             )}
           </Menus.List>

@@ -5,7 +5,7 @@ import ConfirmDelete from "../../ui/ConfirmDelete";
 import useDeleteScheme from "./useDeleteScheme";
 import Table from "../../ui/Table";
 import Heading from "../../ui/Heading";
-import ButtonIcon from "../../ui/ButtonIcon";
+import ButtonIconWithPermission from "../../ui/ButtonIconWithPermission";
 import { HiPencil, HiTrash } from "react-icons/hi2";
 
 const StyledSchemeDetailsComponent = styled.div`
@@ -296,57 +296,17 @@ function SchemeDetails({ scheme, scheme_item_id, scheme_item_name }) {
         </PriceItem>
       </PricingBox>
 
-      {/* <Row>
-        <Column>
-          <Heading>Price</Heading>
-          <Stacked2>
-            <span>Profit - </span>
-            <span>Rs.{profit}</span>
-          </Stacked2>
-        </Column>
-        <Column>
-          <Stacked2>
-            <span>Cust. BP - </span>
-            <span>Rs.{effective_buying_price_customer}</span>
-          </Stacked2>
-          <Stacked2>
-            <span>Enter. SP - </span>
-            <span>Rs.{effective_selling_price_enterprise}</span>
-          </Stacked2>
-        </Column>
-      </Row>
-
-      <Row>
-        <Column>
-          <Heading>Price/pt</Heading>
-          <Stacked2>
-            <span>Profit - </span>
-            <span>Rs.{profit_per_pt}</span>
-          </Stacked2>
-        </Column>
-        <Column>
-          <Stacked2>
-            <span>Cust. BP - </span>
-            <span>Rs.{effective_buying_price_customer_per_pt}</span>
-          </Stacked2>
-          <Stacked2>
-            <span>Enter. SP - </span>
-            <span>Rs.{effective_selling_price_enterprise_per_pt}</span>
-          </Stacked2>
-        </Column>
-      </Row> */}
-
       <IconBox>
         <Modal.Open opens="edit">
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <HiPencil />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Open opens="delete">
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <HiTrash />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Window name="edit">

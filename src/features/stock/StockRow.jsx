@@ -9,6 +9,7 @@ import { useDeleteStockItem } from "./useDeleteStockitem";
 import { useLoadNewStock } from "./useLoadNewStock";
 import { IoDownloadOutline } from "react-icons/io5";
 import StockItemDetails from "./StockItemDetails";
+import { BiDetail } from "react-icons/bi";
 
 const Stacked2 = styled.div`
   display: flex;
@@ -109,15 +110,23 @@ function StockRow({ item }) {
         <Menus.Menu>
           <Menus.Toggle id={id} />
           <Menus.List id={id}>
+            <Modal.Open opens="details">
+              <Menus.Button icon={<BiDetail />}>Details</Menus.Button>
+            </Modal.Open>
             <Modal.Open opens="edit">
-              <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+              <Menus.Button icon={<HiPencil />} checkAccess={true}>
+                Edit
+              </Menus.Button>
             </Modal.Open>
             <Modal.Open opens="delete">
-              <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+              <Menus.Button icon={<HiTrash />} checkAccess={true}>
+                Delete
+              </Menus.Button>
             </Modal.Open>
             <Menus.Button
               icon={<IoDownloadOutline />}
               onClick={() => loadNewStock(id)}
+              checkAccess={true}
             >
               Load hold stock
             </Menus.Button>

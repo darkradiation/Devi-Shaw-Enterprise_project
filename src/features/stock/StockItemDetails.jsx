@@ -4,7 +4,7 @@ import { HiTrash } from "react-icons/hi2";
 import { FaEdit } from "react-icons/fa";
 import Heading from "../../ui/Heading";
 import Table from "../../ui/Table";
-import ButtonIcon from "../../ui/ButtonIcon";
+import ButtonIconWithPermission from "../../ui/ButtonIconWithPermission";
 import Modal from "../../ui/Modal";
 import EditStockItem from "./EditStockItem";
 import ConfirmDelete from "../../ui/ConfirmDelete";
@@ -170,23 +170,24 @@ function StockItemDetails({ stockItem }) {
 
       <IconBox>
         <Modal.Open opens="edit-stock" disabled={isWorking}>
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <FaEdit />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
-        <ButtonIcon
+        <ButtonIconWithPermission
+          checkAccess={true}
           size="lg"
           disabled={isWorking}
           onClick={() => loadNewStock(id)}
         >
           <IoDownloadOutline />
-        </ButtonIcon>
+        </ButtonIconWithPermission>
 
         <Modal.Open opens="delete-stock" disabled={isWorking}>
-          <ButtonIcon size="lg">
+          <ButtonIconWithPermission checkAccess={true} size="lg">
             <HiTrash />
-          </ButtonIcon>
+          </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Window opens="edit-stock">

@@ -93,6 +93,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const [extraFree500ml, setExtraFree500ml] = useState(0);
   const [extraFree1ltr, setExtraFree1ltr] = useState(0);
   const [extraDiscount, setExtraDiscount] = useState(0);
+  // eslint-disable-next-line no-unused-vars
   const [extraCosts, setExtraCosts] = useState(0);
 
   const [availablePcs500ml, setAvailablePcs500ml] = useState(0);
@@ -106,6 +107,38 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
 
   // useEffect to calculate and update available pcs for 500ml and 1ltr whenever newOrder or stock changes
   useEffect(() => {
+    const calculateAvailablePcs = (itemId) => {
+      const itemStock = stock?.find((s) => s.id === itemId);
+      if (!itemStock) return 0;
+
+      // Calculate the "pt" ordered (for paid items) for the given item
+      const ptUsed = newOrder.order_items
+        .filter((orderItem) => orderItem.item_id === itemId)
+        .reduce((sum, orderItem) => sum + orderItem.item_quantity, 0);
+
+      // Calculate the free pieces used for the given item from all orders.
+      // Free items are stored in the "free_items" array (usually under an extra order item, e.g., item_id 0).
+      const freeUsed = newOrder.order_items.reduce((sum, orderItem) => {
+        if (orderItem.free_items && orderItem.free_items.length > 0) {
+          const freeForItem = orderItem.free_items
+            .filter((freeItem) => Number(freeItem.free_item_id) === itemId)
+            .reduce((acc, freeItem) => acc + freeItem.free_item_quantity, 0);
+          return sum + freeForItem;
+        }
+        return sum;
+      }, 0);
+
+      // Calculate remaining "pt" available in stock (ensuring non-negative)
+      const availablePt = Math.max(itemStock.available_stock.pt - ptUsed, 0);
+
+      // Total available pieces (pcs) is calculated by converting the remaining "pt" into pcs and adding any extra pcs available.
+      const totalAvailablePcs =
+        availablePt * itemStock.quantity_per_pt + itemStock.available_stock.pcs;
+
+      // Finally, deduct the free items already used.
+      return Math.max(totalAvailablePcs - freeUsed, 0);
+    };
+
     const avail500ml = calculateAvailablePcs(1);
     const avail1ltr = calculateAvailablePcs(2);
     setAvailablePcs500ml(avail500ml);
@@ -118,38 +151,6 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const handleStoreChange = (event) => {
     setSelectedStoreId(event.target.value);
     setNewOrder({ ...newOrder, customer_id: Number(event.target.value) });
-  };
-
-  const calculateAvailablePcs = (itemId) => {
-    const itemStock = stock.find((s) => s.id === itemId);
-    if (!itemStock) return 0;
-
-    // Calculate the "pt" ordered (for paid items) for the given item
-    const ptUsed = newOrder.order_items
-      .filter((orderItem) => orderItem.item_id === itemId)
-      .reduce((sum, orderItem) => sum + orderItem.item_quantity, 0);
-
-    // Calculate the free pieces used for the given item from all orders.
-    // Free items are stored in the "free_items" array (usually under an extra order item, e.g., item_id 0).
-    const freeUsed = newOrder.order_items.reduce((sum, orderItem) => {
-      if (orderItem.free_items && orderItem.free_items.length > 0) {
-        const freeForItem = orderItem.free_items
-          .filter((freeItem) => Number(freeItem.free_item_id) === itemId)
-          .reduce((acc, freeItem) => acc + freeItem.free_item_quantity, 0);
-        return sum + freeForItem;
-      }
-      return sum;
-    }, 0);
-
-    // Calculate remaining "pt" available in stock (ensuring non-negative)
-    const availablePt = Math.max(itemStock.available_stock.pt - ptUsed, 0);
-
-    // Total available pieces (pcs) is calculated by converting the remaining "pt" into pcs and adding any extra pcs available.
-    const totalAvailablePcs =
-      availablePt * itemStock.quantity_per_pt + itemStock.available_stock.pcs;
-
-    // Finally, deduct the free items already used.
-    return Math.max(totalAvailablePcs - freeUsed, 0);
   };
 
   function handleExtra500mlChange(e) {

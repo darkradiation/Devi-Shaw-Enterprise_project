@@ -9,6 +9,7 @@ import Row from "../ui/Row";
 import CreateNewScheme from "../features/schemes/CreateNewScheme";
 import SchemeTableOperations from "../features/schemes/SchemeTableOperations";
 import styled from "styled-components";
+import ButtonIconWithPermission from "../ui/ButtonIconWithPermission";
 
 const Stacked = styled.div`
   display: flex;
@@ -34,13 +35,13 @@ function Schemes() {
           </Row>
           <div>
             <Modal>
-              <Modal.Open opens="refillStock">
-                <ButtonIcon>
+              <Modal.Open opens="addScheme">
+                <ButtonIconWithPermission checkAccess={true}>
                   {/* <FaBoxOpen /> */}
                   <FaPlus />
-                </ButtonIcon>
+                </ButtonIconWithPermission>
               </Modal.Open>
-              <Modal.Window name="refillStock">
+              <Modal.Window name="addScheme">
                 <CreateNewScheme />
               </Modal.Window>
             </Modal>

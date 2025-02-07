@@ -23,12 +23,17 @@ function Stocks() {
             <Menus.Toggle id={"stock"} icon={<TiThMenu />} />
             <Menus.List id={"stock"}>
               <Modal.Open opens="addStockItem">
-                <Menus.Button icon={<AiOutlineAppstoreAdd />}>
+                <Menus.Button
+                  icon={<AiOutlineAppstoreAdd />}
+                  checkAccess={true}
+                >
                   Add Stock
                 </Menus.Button>
               </Modal.Open>
               <Modal.Open opens="refillStock">
-                <Menus.Button icon={<FaFill />}>Refill Stock</Menus.Button>
+                <Menus.Button icon={<FaFill />} checkAccess={true}>
+                  Refill Stock
+                </Menus.Button>
               </Modal.Open>
               <Menus.Button icon={<IoPeople />}>
                 <NavLink to="/suppliers">Suppliers</NavLink>

@@ -8,6 +8,7 @@ import Menus from "../ui/Menus";
 import CreateOrderForm from "../features/orders/CreateOrderForm";
 import OrderTable from "../features/orders/OrderTable";
 import OrderTableOperations from "../features/orders/OrderTableOperations";
+import ButtonIconWithPermission from "../ui/ButtonIconWithPermission";
 
 function Orders() {
   return (
@@ -16,9 +17,9 @@ function Orders() {
         <Heading as="h4">Orders</Heading>
         <Modal>
           <Modal.Open opens="addCustomer">
-            <ButtonIcon>
+            <ButtonIconWithPermission checkAccess={true}>
               <BiCartAdd />
-            </ButtonIcon>
+            </ButtonIconWithPermission>
           </Modal.Open>
 
           <Modal.Window name="addCustomer">

@@ -6,6 +6,7 @@ import Modal from "../ui/Modal";
 import Row from "../ui/Row";
 import RouteTable from "../features/routes/RouteTable";
 import CreateRouteForm from "../features/routes/CreateRouteForm";
+import ButtonIconWithPermission from "../ui/ButtonIconWithPermission";
 
 function RoutesPage() {
   return (
@@ -13,15 +14,15 @@ function RoutesPage() {
       <Row type="horizontal">
         <Heading as="h4">Routes</Heading>
         <Modal>
-          {/* <Modal.Open opens="addRoute">
-            <ButtonIcon>
+          <Modal.Open opens="addRoute">
+            <ButtonIconWithPermission checkAccess={true}>
               <RiRoadMapLine />
-            </ButtonIcon>
-          </Modal.Open> */}
+            </ButtonIconWithPermission>
+          </Modal.Open>
 
-          {/* <Modal.Window name="addRoute">
+          <Modal.Window name="addRoute">
             <CreateRouteForm />
-          </Modal.Window> */}
+          </Modal.Window>
         </Modal>
       </Row>
 

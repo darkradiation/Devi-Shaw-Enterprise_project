@@ -113,10 +113,14 @@ function SchemeRow({ scheme, scheme_item_id, scheme_item_name }) {
               <Menus.Button icon={<BiDetail />}>Details</Menus.Button>
             </Modal.Open>
             <Modal.Open opens="edit">
-              <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+              <Menus.Button icon={<HiPencil />} checkAccess={true}>
+                Edit
+              </Menus.Button>
             </Modal.Open>
             <Modal.Open opens="delete">
-              <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+              <Menus.Button icon={<HiTrash />} checkAccess={true}>
+                Delete
+              </Menus.Button>
             </Modal.Open>
           </Menus.List>
           <Modal.Window name="details">
