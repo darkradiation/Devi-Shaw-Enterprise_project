@@ -6,6 +6,7 @@ import Checkbox from "../../ui/Checkbox";
 import { useScheme1ByItemId } from "../schemes/useScheme1ByItemId";
 import { useScheme2ByItemId } from "../schemes/useScheme2ByItemId";
 import { useScheme3ByItemId } from "../schemes/useScheme3ByItemId";
+import toast from "react-hot-toast";
 
 const Label = styled.label`
   font-weight: 500;
@@ -74,8 +75,13 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
 
   const handleQuantityChange = (event) => {
     const newQuantity = Number(event.target.value) || 0;
+
+    if (newQuantity > available_pt) {
+      toast.error(`Only ${available_pt} pt. available in stock.`);
+      return;
+    }
+
     setQuantity(newQuantity);
-    // updateOrderItem(id, { item_quantity: newQuantity });
     updateFreeItemsString(selectedScheme, newQuantity);
   };
 
@@ -214,6 +220,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
             id="quantity"
             value={quantity}
             onChange={handleQuantityChange}
+            disabled={available_pt <= 0}
           />
         </div>
         <div>
@@ -223,6 +230,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
             id="discountPerPt"
             value={discountPerPt}
             onChange={handleDiscountChange}
+            disabled={available_pt <= 0}
           />
         </div>
       </Stacked1>

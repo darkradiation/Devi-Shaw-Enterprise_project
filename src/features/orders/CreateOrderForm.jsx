@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { add } from "date-fns";
 import { useForm } from "react-hook-form";
 
@@ -15,6 +15,7 @@ import { useCustomers } from "../customers/useCustomers";
 import { useStock } from "../stock/useStock";
 import { useAddOrder } from "./useAddOrder";
 import Input from "../../ui/Input";
+import toast from "react-hot-toast";
 
 //                               2024-05-23T07:44:27+00:00
 //  required date output      -- 2024-04-25T12:00:00+00:00
@@ -94,11 +95,23 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const [extraDiscount, setExtraDiscount] = useState(0);
   const [extraCosts, setExtraCosts] = useState(0);
 
+  const [availablePcs500ml, setAvailablePcs500ml] = useState(0);
+  const [availablePcs1ltr, setAvailablePcs1ltr] = useState(0);
+
   const { handleSubmit, reset } = useForm();
 
   const { isLoadingCustomers, customers } = useCustomers();
   const { isLoadingStock, stock } = useStock();
   const { addOrder, isAddingOrder } = useAddOrder();
+
+  // useEffect to calculate and update available pcs for 500ml and 1ltr whenever newOrder or stock changes
+  useEffect(() => {
+    const avail500ml = calculateAvailablePcs(1);
+    const avail1ltr = calculateAvailablePcs(2);
+    setAvailablePcs500ml(avail500ml);
+    setAvailablePcs1ltr(avail1ltr);
+  }, [newOrder, stock]);
+
   const isWorking = isLoadingCustomers || isLoadingStock || isAddingOrder;
   if (isWorking) return <Spinner />;
 
@@ -106,6 +119,55 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     setSelectedStoreId(event.target.value);
     setNewOrder({ ...newOrder, customer_id: Number(event.target.value) });
   };
+
+  const calculateAvailablePcs = (itemId) => {
+    const itemStock = stock.find((s) => s.id === itemId);
+    if (!itemStock) return 0;
+
+    // Calculate the "pt" ordered (for paid items) for the given item
+    const ptUsed = newOrder.order_items
+      .filter((orderItem) => orderItem.item_id === itemId)
+      .reduce((sum, orderItem) => sum + orderItem.item_quantity, 0);
+
+    // Calculate the free pieces used for the given item from all orders.
+    // Free items are stored in the "free_items" array (usually under an extra order item, e.g., item_id 0).
+    const freeUsed = newOrder.order_items.reduce((sum, orderItem) => {
+      if (orderItem.free_items && orderItem.free_items.length > 0) {
+        const freeForItem = orderItem.free_items
+          .filter((freeItem) => Number(freeItem.free_item_id) === itemId)
+          .reduce((acc, freeItem) => acc + freeItem.free_item_quantity, 0);
+        return sum + freeForItem;
+      }
+      return sum;
+    }, 0);
+
+    // Calculate remaining "pt" available in stock (ensuring non-negative)
+    const availablePt = Math.max(itemStock.available_stock.pt - ptUsed, 0);
+
+    // Total available pieces (pcs) is calculated by converting the remaining "pt" into pcs and adding any extra pcs available.
+    const totalAvailablePcs =
+      availablePt * itemStock.quantity_per_pt + itemStock.available_stock.pcs;
+
+    // Finally, deduct the free items already used.
+    return Math.max(totalAvailablePcs - freeUsed, 0);
+  };
+
+  function handleExtra500mlChange(e) {
+    const newQ = Number(e.target.value);
+    if (newQ > availablePcs500ml) {
+      toast.error(`Only ${availablePcs500ml} pcs. available in stock.`);
+      return;
+    }
+    setExtraFree500ml(newQ);
+  }
+  function handleExtra1ltrChange(e) {
+    const newQ = Number(e.target.value);
+    if (newQ > availablePcs1ltr) {
+      toast.error(`Only ${availablePcs1ltr} pcs. available in stock.`);
+      return;
+    }
+    setExtraFree1ltr(newQ);
+  }
 
   function updateExtraFreeItems(order) {
     const free500mlStock = stock.find((s) => s.id === 1);
@@ -218,13 +280,13 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   }
 
   async function onSubmit() {
-    console.log(newOrder);
+    // console.log(newOrder);
     const modifiedOrderAUEFI = updateExtraFreeItems(newOrder);
-    console.log(modifiedOrderAUEFI);
+    // console.log(modifiedOrderAUEFI);
     const modifiedOrderAAEC = applyExtraCosts(modifiedOrderAUEFI);
-    console.log(modifiedOrderAAEC);
+    // console.log(modifiedOrderAAEC);
     const modifiedOrderACOV = calculateOrderValues(modifiedOrderAAEC);
-    console.log(modifiedOrderACOV);
+    // console.log(modifiedOrderACOV);
     addOrder({ new_order: modifiedOrderACOV });
     handleCloseForm();
   }
@@ -237,6 +299,8 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     reset();
     onCloseModal();
   }
+
+  // create a useeffect to calculate and update available 500ml and 1ltr pcs when newOrder achnges
 
   return (
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
@@ -264,18 +328,20 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
         />
       ))}
 
-      <FormRow label="extra free 500ml">
+      <FormRow label={`extra free 500ml - avl(${availablePcs500ml})`}>
         <Input
           type="number"
           value={extraFree500ml}
-          onChange={(e) => setExtraFree500ml(Number(e.target.value))}
+          onChange={(e) => handleExtra500mlChange(e)}
+          disabled={availablePcs500ml <= 0}
         />
       </FormRow>
-      <FormRow label="extra free 1ltr">
+      <FormRow label={`extra free 1ltr - avl(${availablePcs1ltr})`}>
         <Input
           type="number"
           value={extraFree1ltr}
-          onChange={(e) => setExtraFree1ltr(Number(e.target.value))}
+          onChange={(e) => handleExtra1ltrChange(e)}
+          disabled={availablePcs1ltr <= 0}
         />
       </FormRow>
       <FormRow label="extra discount">
@@ -300,3 +366,5 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
 }
 
 export default CreateOrderForm;
+
+// to apply available pcs fro extra items also
