@@ -22,7 +22,7 @@ function Customers() {
             <Menus.Toggle id={"customers"} icon={<TiThMenu />} />
             <Menus.List id={"customers"}>
               <Modal.Open opens="addCustomer">
-                <Menus.Button icon={<RiUserAddLine />} checkAccess={true}>
+                <Menus.Button icon={<RiUserAddLine />} level={2}>
                   Add Customer
                 </Menus.Button>
               </Modal.Open>

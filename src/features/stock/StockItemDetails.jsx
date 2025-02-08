@@ -1,18 +1,18 @@
-// StockItemDetails.jsx
 import styled from "styled-components";
 import { HiTrash } from "react-icons/hi2";
 import { FaEdit } from "react-icons/fa";
+import { IoDownloadOutline } from "react-icons/io5";
+
 import Heading from "../../ui/Heading";
 import Table from "../../ui/Table";
 import ButtonIconWithPermission from "../../ui/ButtonIconWithPermission";
 import Modal from "../../ui/Modal";
 import EditStockItem from "./EditStockItem";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+
 import { useDeleteStockItem } from "./useDeleteStockitem";
-import { IoDownloadOutline } from "react-icons/io5";
 import { useLoadNewStock } from "./useLoadNewStock";
 
-// Styled container similar to OrderDetails
 const StyledStockItemDetailsComponent = styled.div`
   width: 100%;
   height: 80vh;
@@ -148,7 +148,7 @@ function StockItemDetails({ stockItem }) {
 
       {Array.isArray(new_stock) && new_stock.length > 0 && (
         <DataBox>
-          <Heading as="h3">New Stock Details</Heading>
+          <Heading as="h3">Hold Stock Details</Heading>
           <Spacer />
           <Table columns="1fr 1fr">
             <Table.Header>
@@ -169,14 +169,8 @@ function StockItemDetails({ stockItem }) {
       )}
 
       <IconBox>
-        <Modal.Open opens="edit-stock" disabled={isWorking}>
-          <ButtonIconWithPermission checkAccess={true} size="lg">
-            <FaEdit />
-          </ButtonIconWithPermission>
-        </Modal.Open>
-
         <ButtonIconWithPermission
-          checkAccess={true}
+          level={2}
           size="lg"
           disabled={isWorking}
           onClick={() => loadNewStock(id)}
@@ -184,8 +178,14 @@ function StockItemDetails({ stockItem }) {
           <IoDownloadOutline />
         </ButtonIconWithPermission>
 
+        <Modal.Open opens="edit-stock" disabled={isWorking}>
+          <ButtonIconWithPermission level={2} size="lg">
+            <FaEdit />
+          </ButtonIconWithPermission>
+        </Modal.Open>
+
         <Modal.Open opens="delete-stock" disabled={isWorking}>
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={3} size="lg">
             <HiTrash />
           </ButtonIconWithPermission>
         </Modal.Open>

@@ -3,12 +3,12 @@ import { BiCartAdd } from "react-icons/bi";
 import Row from "../ui/Row";
 import Heading from "../ui/Heading";
 import Modal from "../ui/Modal";
-import ButtonIcon from "../ui/ButtonIcon";
 import Menus from "../ui/Menus";
+import ButtonIconWithPermission from "../ui/ButtonIconWithPermission";
+
 import CreateOrderForm from "../features/orders/CreateOrderForm";
 import OrderTable from "../features/orders/OrderTable";
 import OrderTableOperations from "../features/orders/OrderTableOperations";
-import ButtonIconWithPermission from "../ui/ButtonIconWithPermission";
 
 function Orders() {
   return (
@@ -17,7 +17,7 @@ function Orders() {
         <Heading as="h4">Orders</Heading>
         <Modal>
           <Modal.Open opens="addCustomer">
-            <ButtonIconWithPermission checkAccess={true}>
+            <ButtonIconWithPermission level={1}>
               <BiCartAdd />
             </ButtonIconWithPermission>
           </Modal.Open>

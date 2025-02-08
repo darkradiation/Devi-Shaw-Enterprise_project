@@ -221,19 +221,19 @@ function CustomerDetails({ id, customer }) {
         </ButtonIcon>
 
         <Modal.Open opens="order">
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={2} size="lg">
             <FaCartPlus />
           </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Open opens="edit">
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={2} size="lg">
             <HiPencil />
           </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Open opens="delete">
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={3} size="lg">
             <HiTrash />
           </ButtonIconWithPermission>
         </Modal.Open>

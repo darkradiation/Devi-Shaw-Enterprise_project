@@ -25,12 +25,12 @@ function SupplierRow({ supplier }) {
           <Menus.Toggle id={id} />
           <Menus.List id={id}>
             <Modal.Open opens="edit">
-              <Menus.Button icon={<HiPencil />} checkAccess={true}>
+              <Menus.Button icon={<HiPencil />} level={2}>
                 Edit
               </Menus.Button>
             </Modal.Open>
             <Modal.Open opens="delete">
-              <Menus.Button icon={<HiTrash />} checkAccess={true}>
+              <Menus.Button icon={<HiTrash />} level={3}>
                 Delete
               </Menus.Button>
             </Modal.Open>

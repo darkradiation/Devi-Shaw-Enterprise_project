@@ -298,13 +298,13 @@ function SchemeDetails({ scheme, scheme_item_id, scheme_item_name }) {
 
       <IconBox>
         <Modal.Open opens="edit">
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={2} size="lg">
             <HiPencil />
           </ButtonIconWithPermission>
         </Modal.Open>
 
         <Modal.Open opens="delete">
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={3} size="lg">
             <HiTrash />
           </ButtonIconWithPermission>
         </Modal.Open>

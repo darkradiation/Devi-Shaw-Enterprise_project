@@ -2,9 +2,9 @@ import { useDarkMode } from "../context/DarkModeContext";
 import DarkModeToggle from "../ui/DarkModeToggle";
 import Heading from "../ui/Heading";
 
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-const StledSettings = styled.div`
+const StyledSettings = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -32,7 +32,7 @@ const StyledLi = styled.li`
 function Settings() {
   const { isDarkMode } = useDarkMode();
   return (
-    <StledSettings>
+    <StyledSettings>
       <StyledUl>
         <div>
           <Heading as="h4">Appearance</Heading>
@@ -44,7 +44,7 @@ function Settings() {
           </StyledUl>
         </div>
       </StyledUl>
-    </StledSettings>
+    </StyledSettings>
   );
 }
 

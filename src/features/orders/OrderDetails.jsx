@@ -493,28 +493,28 @@ function OrderDetails({ order }) {
 
         {isCancellable && (
           <Modal.Open opens="cancel">
-            <ButtonIconWithPermission checkAccess={true}>
+            <ButtonIconWithPermission level={1}>
               <ImCancelCircle />
             </ButtonIconWithPermission>
           </Modal.Open>
         )}
         {action === "Mark delivered" && (
           <Modal.Open opens="markDelivered">
-            <ButtonIconWithPermission checkAccess={true}>
+            <ButtonIconWithPermission level={1}>
               <HiPencil />
             </ButtonIconWithPermission>
           </Modal.Open>
         )}
         {action === "Make payment" && (
           <Modal.Open opens="makePayment">
-            <ButtonIconWithPermission checkAccess={true}>
+            <ButtonIconWithPermission level={1}>
               <HiPencil />
             </ButtonIconWithPermission>
           </Modal.Open>
         )}
 
         <Modal.Open opens="order">
-          <ButtonIconWithPermission checkAccess={true} size="lg">
+          <ButtonIconWithPermission level={1} size="lg">
             <FaCartPlus />
           </ButtonIconWithPermission>
         </Modal.Open>

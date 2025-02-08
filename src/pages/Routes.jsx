@@ -1,5 +1,4 @@
 import { RiRoadMapLine } from "react-icons/ri";
-import ButtonIcon from "../ui/ButtonIcon";
 import Heading from "../ui/Heading";
 import Menus from "../ui/Menus";
 import Modal from "../ui/Modal";
@@ -15,7 +14,7 @@ function RoutesPage() {
         <Heading as="h4">Routes</Heading>
         <Modal>
           <Modal.Open opens="addRoute">
-            <ButtonIconWithPermission checkAccess={true}>
+            <ButtonIconWithPermission level={2}>
               <RiRoadMapLine />
             </ButtonIconWithPermission>
           </Modal.Open>

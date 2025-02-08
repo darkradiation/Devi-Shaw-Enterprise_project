@@ -1,10 +1,11 @@
 import styled from "styled-components";
+import { BiDetail } from "react-icons/bi";
+import { HiPencil, HiTrash } from "react-icons/hi2";
+
 import Table from "../../ui/Table";
 import Modal from "../../ui/Modal";
 import Menus from "../../ui/Menus";
-import { HiPencil, HiTrash } from "react-icons/hi2";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-import { BiDetail } from "react-icons/bi";
 import SchemeDetails from "./SchemeDetails";
 import EditScheme from "./EditScheme";
 import useDeleteScheme from "./useDeleteScheme";
@@ -113,12 +114,12 @@ function SchemeRow({ scheme, scheme_item_id, scheme_item_name }) {
               <Menus.Button icon={<BiDetail />}>Details</Menus.Button>
             </Modal.Open>
             <Modal.Open opens="edit">
-              <Menus.Button icon={<HiPencil />} checkAccess={true}>
+              <Menus.Button icon={<HiPencil />} level={2}>
                 Edit
               </Menus.Button>
             </Modal.Open>
             <Modal.Open opens="delete">
-              <Menus.Button icon={<HiTrash />} checkAccess={true}>
+              <Menus.Button icon={<HiTrash />} level={3}>
                 Delete
               </Menus.Button>
             </Modal.Open>

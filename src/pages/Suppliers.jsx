@@ -14,7 +14,7 @@ function Suppliers() {
         <Heading as="h4">Suppliers</Heading>
         <Modal>
           <Modal.Open opens="addSupplier">
-            <ButtonIconWithPermission checkAccess={true}>
+            <ButtonIconWithPermission level={2}>
               <RiUserAddLine />
             </ButtonIconWithPermission>
           </Modal.Open>

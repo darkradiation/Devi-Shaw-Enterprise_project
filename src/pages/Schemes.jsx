@@ -1,15 +1,15 @@
-import { FaBoxOpen, FaPlus } from "react-icons/fa6";
-import SchemeTable from "../features/schemes/SchemeTable";
-import ButtonIcon from "../ui/ButtonIcon";
+import styled from "styled-components";
+import { FaPlus } from "react-icons/fa6";
+
 import Filter from "../ui/Filter";
 import Heading from "../ui/Heading";
 import Menus from "../ui/Menus";
 import Modal from "../ui/Modal";
 import Row from "../ui/Row";
-import CreateNewScheme from "../features/schemes/CreateNewScheme";
-import SchemeTableOperations from "../features/schemes/SchemeTableOperations";
-import styled from "styled-components";
 import ButtonIconWithPermission from "../ui/ButtonIconWithPermission";
+import CreateNewScheme from "../features/schemes/CreateNewScheme";
+import SchemeTable from "../features/schemes/SchemeTable";
+import SchemeTableOperations from "../features/schemes/SchemeTableOperations";
 
 const Stacked = styled.div`
   display: flex;
@@ -36,8 +36,7 @@ function Schemes() {
           <div>
             <Modal>
               <Modal.Open opens="addScheme">
-                <ButtonIconWithPermission checkAccess={true}>
-                  {/* <FaBoxOpen /> */}
+                <ButtonIconWithPermission level={2}>
                   <FaPlus />
                 </ButtonIconWithPermission>
               </Modal.Open>

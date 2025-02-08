@@ -113,23 +113,23 @@ function StockRow({ item }) {
             <Modal.Open opens="details">
               <Menus.Button icon={<BiDetail />}>Details</Menus.Button>
             </Modal.Open>
+            <Menus.Button
+              icon={<IoDownloadOutline />}
+              onClick={() => loadNewStock(id)}
+              level={2}
+            >
+              Load hold stock
+            </Menus.Button>
             <Modal.Open opens="edit">
-              <Menus.Button icon={<HiPencil />} checkAccess={true}>
+              <Menus.Button icon={<HiPencil />} level={2}>
                 Edit
               </Menus.Button>
             </Modal.Open>
             <Modal.Open opens="delete">
-              <Menus.Button icon={<HiTrash />} checkAccess={true}>
+              <Menus.Button icon={<HiTrash />} level={3}>
                 Delete
               </Menus.Button>
             </Modal.Open>
-            <Menus.Button
-              icon={<IoDownloadOutline />}
-              onClick={() => loadNewStock(id)}
-              checkAccess={true}
-            >
-              Load hold stock
-            </Menus.Button>
           </Menus.List>
           <Modal.Window name="details">
             <StockItemDetails stockItem={item} />

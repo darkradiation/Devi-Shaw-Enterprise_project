@@ -3,8 +3,8 @@ import { createPortal } from "react-dom";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
 import { useOutsideClick } from "../hooks/useOutsideClick";
-import { useHasEditPermission } from "../features/authentication/useHasEditPermission";
 import toast from "react-hot-toast";
+import { useUserLevel } from "../features/authentication/useUserLevel";
 
 const Menu = styled.div`
   display: flex;
@@ -161,20 +161,40 @@ function HList({ id, children }) {
 //     onClick?.();
 //     close();
 //   }
-function Button({ children, icon, onClick, disabled, checkAccess = false }) {
+function Button({ children, icon, onClick, disabled, level = 0 }) {
   const { close } = useContext(MenusContext);
-  const { hasEditPermission } = useHasEditPermission(); // retrieve permission
+  const { isLevel0User, isLevel1User, isLevel2User, isLevel3User } =
+    useUserLevel();
 
-  function handleClick() {
-    // If the button is marked as an edit button, check permissions first
-    if (checkAccess && !hasEditPermission) {
-      console.log(hasEditPermission);
+  const hasPermission = () => {
+    // If a level is provided, check membership in any of the allowed levels.
+    if (typeof level === "number") {
+      switch (level) {
+        case 0:
+          return isLevel0User || isLevel1User || isLevel2User || isLevel3User;
+        case 1:
+          return isLevel1User || isLevel2User || isLevel3User;
+        case 2:
+          return isLevel2User || isLevel3User;
+        case 3:
+          return isLevel3User;
+        default:
+          return false;
+      }
+    }
+    // If no level prop is provided, default to allow.
+    return true;
+  };
+
+  const handleClick = (e) => {
+    if (!hasPermission()) {
       toast.error("User does not have permission to perform this action.");
+      e.stopPropagation();
       return;
     }
-    onClick?.();
+    onClick?.(e);
     close();
-  }
+  };
 
   return (
     <li>

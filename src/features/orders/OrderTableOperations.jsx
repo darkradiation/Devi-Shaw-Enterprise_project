@@ -43,10 +43,10 @@ function OrderTableOperations() {
           <FilterBy
             filterField="status"
             options={[
-              { value: "all", label: "All" },
-              { value: "paid", label: "Paid" },
-              { value: "due", label: "Due" },
-              { value: "pending", label: "Pending" },
+              { value: "all", label: "all status" },
+              { value: "paid", label: "paid" },
+              { value: "due", label: "due" },
+              { value: "pending", label: "pending" },
             ]}
           />
         </Menus.HList>

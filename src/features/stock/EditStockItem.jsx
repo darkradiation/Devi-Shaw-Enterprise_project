@@ -192,7 +192,7 @@ function EditStockItem({ item, onCloseModal }) {
           type="text"
           id="available_pt"
           defaultValue={defaultAvailablePt}
-          disabled={isWorking}
+          disabled={true}
           {...register("available_pt", {
             required: "This field is required",
           })}
@@ -207,7 +207,7 @@ function EditStockItem({ item, onCloseModal }) {
           type="text"
           id="available_pcs"
           defaultValue={defaultAvailablePcs}
-          disabled={isWorking}
+          disabled={true}
           {...register("available_pcs", {
             required: "This field is required",
           })}

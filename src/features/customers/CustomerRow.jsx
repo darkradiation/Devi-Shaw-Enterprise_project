@@ -1,44 +1,27 @@
+import styled from "styled-components";
+import { HiPencil, HiTrash } from "react-icons/hi2";
+import { FaCartPlus } from "react-icons/fa";
+import { BiDetail } from "react-icons/bi";
+
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal";
-import CustomerRowOperations from "./CustomerRowOperations";
-
-import { HiPencil, HiTrash } from "react-icons/hi2";
-import EditCustomer from "./EditCustomer";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-import styled from "styled-components";
+import CustomerRowOperations from "./CustomerRowOperations";
+import EditCustomer from "./EditCustomer";
 import CreateOrderForm from "../orders/CreateOrderForm";
-import { useDeleteCustomer } from "./useDeleteCustomer";
-import { FaCartPlus } from "react-icons/fa";
-import { BiDetail } from "react-icons/bi";
 import CustomerDetails from "./CustomerDetails";
+
+import { useDeleteCustomer } from "./useDeleteCustomer";
 
 const Operations = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
-const BlueTag = styled.div`
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  padding: 0.2rem 1rem;
-
-  border: 1px solid var(--color-grey-300);
-  border-radius: var(--border-radius-lg);
-
-  background-color: var(--color-blue-100);
-  color: var(--color-blue-700);
-`;
 
 function CustomerRow({ customer }) {
-  const {
-    id,
-    store_name,
-    store_address,
-    store_geoLink,
-    // routes: { route_name, near_or_far },
-  } = customer;
+  const { id, store_name, store_address, store_geoLink } = customer;
   const { isDeletingCustomer, deleteCustomer } = useDeleteCustomer();
   const isWorking = isDeletingCustomer;
   if (isWorking) return;
@@ -51,7 +34,6 @@ function CustomerRow({ customer }) {
           <Modal.Open opens="details">
             <div>
               <div>{store_name}</div>
-              {/* <BlueTag>{route_name}</BlueTag> */}
             </div>
           </Modal.Open>
           <Operations>
@@ -60,7 +42,6 @@ function CustomerRow({ customer }) {
               store_geoLink={store_geoLink}
             />
 
-            {/* <Modal> */}
             <Menus.Menu>
               <Menus.Toggle id={id} />
               <Menus.List id={id}>
@@ -68,17 +49,17 @@ function CustomerRow({ customer }) {
                   <Menus.Button icon={<BiDetail />}>Details</Menus.Button>
                 </Modal.Open>
                 <Modal.Open opens="order">
-                  <Menus.Button icon={<FaCartPlus />} checkAccess={true}>
+                  <Menus.Button icon={<FaCartPlus />} level={2}>
                     Order
                   </Menus.Button>
                 </Modal.Open>
                 <Modal.Open opens="edit">
-                  <Menus.Button icon={<HiPencil />} checkAccess={true}>
+                  <Menus.Button icon={<HiPencil />} level={2}>
                     Edit
                   </Menus.Button>
                 </Modal.Open>
                 <Modal.Open opens="delete">
-                  <Menus.Button icon={<HiTrash />} checkAccess={true}>
+                  <Menus.Button icon={<HiTrash />} level={3}>
                     Delete
                   </Menus.Button>
                 </Modal.Open>
@@ -102,7 +83,6 @@ function CustomerRow({ customer }) {
                 />
               </Modal.Window>
             </Menus.Menu>
-            {/* </Modal> */}
           </Operations>
         </Modal>
       </Table.Row>
