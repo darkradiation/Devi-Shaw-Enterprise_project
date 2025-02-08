@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { useUpdateStockItem } from "./useUpdateStockItem";
 import Spinner from "../../ui/Spinner";
+import { useIsAdmin } from "../authentication/useIsAdmin";
 const StackedButtons = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -32,6 +33,7 @@ function EditStockItem({ item, onCloseModal }) {
   const defaultAvailablePt = available_pt;
   const defaultAvailablePcs = available_pcs;
 
+  const { isAdmin } = useIsAdmin();
   const { register, handleSubmit, reset, formState } = useForm();
   const { updateStockItem, isUpdatingStockItem } = useUpdateStockItem();
   const isWorking = isUpdatingStockItem;
@@ -192,7 +194,7 @@ function EditStockItem({ item, onCloseModal }) {
           type="text"
           id="available_pt"
           defaultValue={defaultAvailablePt}
-          disabled={true}
+          disabled={!isAdmin}
           {...register("available_pt", {
             required: "This field is required",
           })}
@@ -207,7 +209,7 @@ function EditStockItem({ item, onCloseModal }) {
           type="text"
           id="available_pcs"
           defaultValue={defaultAvailablePcs}
-          disabled={true}
+          disabled={!isAdmin}
           {...register("available_pcs", {
             required: "This field is required",
           })}

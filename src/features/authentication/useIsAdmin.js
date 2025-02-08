@@ -7,7 +7,7 @@ export function useIsAdmin() {
   const isAdmin =
     email_verified &&
     email === "admin@dse.com" &&
-    sub === "b2f468c7-33bc-44a1-86b2-217f76b398b6";
+    sub === "33c2061f-a9ad-46be-bdad-13672071207c";
 
   return { isAdmin };
 }
