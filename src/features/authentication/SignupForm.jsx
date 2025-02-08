@@ -21,9 +21,9 @@ function SignupForm({ onCloseModal }) {
 
   const { errors } = formState;
 
-  function onSubmit({ fullName, email, password }) {
+  function onSubmit({ fullName, email, level, password }) {
     signup(
-      { fullName, email, password },
+      { fullName, email, level, password },
       {
         onSettled: () => {
           reset();
@@ -61,6 +61,25 @@ function SignupForm({ onCloseModal }) {
             pattern: {
               value: /\S+@\S+\.\S+/,
               message: "Please provide a valid email address",
+            },
+          })}
+        />
+      </FormRow>
+
+      <FormRow label="Level(0/1/2/3)" error={errors?.level?.message}>
+        <Input
+          type="text"
+          id="level"
+          disabled={isLoading}
+          {...register("level", {
+            required: "This field is required",
+            min: {
+              value: 0,
+              message: "0 is the lowest level",
+            },
+            max: {
+              value: 3,
+              message: "3 is the highest level",
             },
           })}
         />
