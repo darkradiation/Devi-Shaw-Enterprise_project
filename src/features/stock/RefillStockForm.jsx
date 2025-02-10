@@ -97,6 +97,7 @@ function RefillStockForm({ onCloseModal }) {
       items: data.refillData,
       extra_costs: data.extraCosts,
       bill_value: totalBill,
+      cash_note: data.cashNote,
     };
 
     console.log(data.refillData);
@@ -196,6 +197,10 @@ function RefillStockForm({ onCloseModal }) {
             min: 0,
           })}
         />
+      </FormRow>
+
+      <FormRow label="Cash Note" error={errors.cashNote?.message}>
+        <Input type="text" disabled={isWorking} {...register("cashNote")} />
       </FormRow>
 
       <FormRow>

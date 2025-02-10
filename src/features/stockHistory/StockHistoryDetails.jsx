@@ -6,6 +6,8 @@ import { MdCall } from "react-icons/md";
 import Heading from "../../ui/Heading";
 import Table from "../../ui/Table";
 import ButtonIcon from "../../ui/ButtonIcon";
+import { useStockItem } from "../stock/useStockItem";
+import { useStock } from "../stock/useStock";
 
 const StyledStockHistoryDetails = styled.div`
   width: 100%;
@@ -98,15 +100,26 @@ function StockHistoryDetails({ stockHistory }) {
     items,
     bill_value,
     extra_costs,
+    cash_note,
     suppliers: { supplier_name, phone_no },
   } = stockHistory;
 
-  // Convert items object to array for table display
+  const { isLoadingStock, stock } = useStock();
+  while (isLoadingStock) return;
+
   const itemsArray = Object.entries(items)
-    .map(([itemId, details]) => ({
-      id: itemId,
-      ...details,
-    }))
+    .map(([itemId, details]) => {
+      // Find the corresponding item in the stock object
+      const stockItem = stock.find(
+        (stockItem) => Number(stockItem.id) === Number(itemId)
+      );
+
+      return {
+        id: itemId,
+        name: stockItem ? stockItem.item_name : "Unknown", // Use item_name from stock or a fallback
+        ...details,
+      };
+    })
     .filter((item) => item.refillQuantity > 0);
 
   const handleCall = () => {
@@ -127,9 +140,10 @@ function StockHistoryDetails({ stockHistory }) {
 
       <DataBox>
         <Heading as="h3">Refilled Items</Heading>
-        <Table columns="2fr 2fr 2fr">
+        <Table columns="4fr  2fr 2fr 4fr">
           <Table.Header>
-            <div>Quant.</div>
+            <div>Item</div>
+            <div>Qt.</div>
             <div>BP</div>
             <div>Total</div>
           </Table.Header>
@@ -137,9 +151,10 @@ function StockHistoryDetails({ stockHistory }) {
             data={itemsArray}
             render={(item) => (
               <Table.Row key={item.id}>
+                <div>{item.name}</div>
                 <div>{item.refillQuantity}</div>
-                <div>Rs. {item.buyingPrice}</div>
-                <div>Rs. {item.buyingPrice * item.refillQuantity}</div>
+                <div>{item.buyingPrice}</div>
+                <div>{item.buyingPrice * item.refillQuantity}</div>
               </Table.Row>
             )}
           />
@@ -164,6 +179,11 @@ function StockHistoryDetails({ stockHistory }) {
           <div>Rs. {bill_value + (extra_costs || 0)}</div>
         </PriceItem>
       </PricingBox>
+
+      <DataBox>
+        <Heading as="h3">Cash Note</Heading>
+        <div>{cash_note}</div>
+      </DataBox>
 
       <IconBox>
         {phone_no && (

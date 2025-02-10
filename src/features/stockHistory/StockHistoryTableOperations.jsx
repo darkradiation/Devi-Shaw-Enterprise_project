@@ -6,9 +6,22 @@ import FilterBy from "../../ui/FilterBy";
 import SortBy from "../../ui/SortBy";
 import Menus from "../../ui/Menus";
 import ButtonIcon from "../../ui/ButtonIcon";
+import { useSuppliers } from "../suppliers/useSuppliers";
 
 function StockHistoryTableOperations() {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Fetch suppliers using the useSuppliers hook
+  const { isLoadingSuppliers, suppliers } = useSuppliers();
+
+  // Dynamically create supplier options for the FilterBy component
+  const supplierOptions = [
+    { value: "all", label: "All Suppliers" }, // Default option
+    ...(suppliers?.map((supplier) => ({
+      value: supplier.id.toString(), // Ensure value is a string
+      label: supplier.supplier_name,
+    })) || []),
+  ];
 
   return (
     <>
@@ -30,13 +43,8 @@ function StockHistoryTableOperations() {
 
           <FilterBy
             filterField="supplier"
-            options={[
-              { value: "all", label: "All Suppliers" },
-              { value: "1", label: "Supplier 1" },
-              { value: "2", label: "Supplier 2" },
-              { value: "3", label: "Supplier 3" },
-              // Note: In real implementation, these would be dynamically loaded from the suppliers table
-            ]}
+            options={supplierOptions} // Use dynamically loaded supplier options
+            disabled={isLoadingSuppliers} // Disable the filter while loading
           />
         </Menus.HList>
       </Menus.Menu>
