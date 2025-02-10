@@ -12,8 +12,16 @@ import Row from "../ui/Row";
 import RefillStockForm from "../features/stock/RefillStockForm";
 import StockTable from "../features/stock/StockTable";
 import CreateNewStockItem from "../features/stock/CreateNewStockItem";
+import { SiLevelsdotfyi } from "react-icons/si";
+import { useStock } from "../features/stock/useStock";
+import { useAddStockLevel } from "../features/stockLevel/useAddStockLevel";
 
 function Stocks() {
+  const { isLoadingStock, stock } = useStock();
+  const { addStockLevel, isAddingStockLevel } = useAddStockLevel();
+  const isWorking = isLoadingStock || isAddingStockLevel;
+  while (isWorking) return;
+
   return (
     <Menus>
       <Row type="horizontal">
@@ -37,6 +45,13 @@ function Stocks() {
               </Menus.Button>
               <Menus.Button icon={<FaHistory />}>
                 <NavLink to="/stock_history">Stock History</NavLink>
+              </Menus.Button>
+              <Menus.Button
+                icon={<SiLevelsdotfyi />}
+                level={2}
+                onClick={() => addStockLevel({ stock })}
+              >
+                Record Stock Level
               </Menus.Button>
             </Menus.List>
 
