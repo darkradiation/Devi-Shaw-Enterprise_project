@@ -12,6 +12,7 @@ import { useStock } from "./useStock";
 import { useRefillStock } from "./useRefillStock";
 import { useSuppliers } from "../suppliers/useSuppliers";
 import { useAddStockHistory } from "../stockHistory/useAddStockHistory";
+import { useIsAdmin } from "../authentication/useIsAdmin";
 
 const StackedButtons = styled.div`
   display: flex;
@@ -52,10 +53,12 @@ function fromToday(numDays, withTime = false) {
 
 function RefillStockForm({ onCloseModal }) {
   const [supplierId, setSupplierId] = useState(1);
+  const [deliveryDate, setDeliveryDate] = useState(fromToday(0));
   const { isLoadingSuppliers, suppliers } = useSuppliers();
   const { isLoadingStock, stock } = useStock();
   const { refillStock, isRefillingStock } = useRefillStock();
   const { addStockHistory, isAddingStockHistory } = useAddStockHistory();
+  const { isAdmin } = useIsAdmin();
 
   const isWorking =
     isLoadingStock ||
@@ -92,7 +95,7 @@ function RefillStockForm({ onCloseModal }) {
       ) + data.extraCosts;
 
     const entry = {
-      // delivery_date: fromToday(0),
+      delivery_date: deliveryDate,
       supplier_id: supplierId,
       items: data.refillData,
       extra_costs: data.extraCosts,
@@ -137,6 +140,15 @@ function RefillStockForm({ onCloseModal }) {
           />
         </FormRow>
       )}
+
+      <FormRow label={"Order date"}>
+        <Input
+          type="text"
+          value={deliveryDate}
+          onChange={(e) => setDeliveryDate(e.target.value)}
+          disabled={!isAdmin}
+        />
+      </FormRow>
 
       {stock.map((stockItem) => (
         <StyledDiv key={stockItem.id}>
