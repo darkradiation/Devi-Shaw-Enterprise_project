@@ -16,25 +16,14 @@ import { useStock } from "../stock/useStock";
 import { useAddOrder } from "./useAddOrder";
 import Input from "../../ui/Input";
 import toast from "react-hot-toast";
-
-//                               2024-05-23T07:44:27+00:00
-//  required date output      -- 2024-04-25T12:00:00+00:00
-//  current date output format --2024-05-23T00:00:00.000
+import { useIsAdmin } from "../authentication/useIsAdmin";
 
 function fromToday(numDays, withTime = false) {
   const date = add(new Date(), { days: numDays });
-  if (!withTime) date.setUTCHours(0, 0, 0, 0);
+  // if (!withTime) date.setUTCHours(0, 0, 0, 0);
   return date.toISOString().slice(0, -1);
 }
-// function fromToday(numDays, withTime = true) {
-//   const date = add(new Date(), { days: numDays });
-//   if (!withTime) date.setUTCHours(0, 0, 0, 0);
-//   const isoString = date.toISOString();
-//   const formattedDate = withTime
-//     ? isoString.slice(0, 19) + "+00:00"
-//     : isoString.slice(0, 10) + "T12:00:00+00:00";
-//   return formattedDate;
-// }
+
 const StackedButtons = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -90,6 +79,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     ...order_template,
     customer_id: Number(store_id),
   });
+  const [orderDate, setOrderDate] = useState(fromToday(0));
   const [extraFree500ml, setExtraFree500ml] = useState(0);
   const [extraFree1ltr, setExtraFree1ltr] = useState(0);
   const [extraDiscount, setExtraDiscount] = useState(0);
@@ -104,6 +94,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const { isLoadingCustomers, customers } = useCustomers();
   const { isLoadingStock, stock } = useStock();
   const { addOrder, isAddingOrder } = useAddOrder();
+  const { isAdmin } = useIsAdmin();
 
   // useEffect to calculate and update available pcs for 500ml and 1ltr whenever newOrder or stock changes
   useEffect(() => {
@@ -151,6 +142,11 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const handleStoreChange = (event) => {
     setSelectedStoreId(event.target.value);
     setNewOrder({ ...newOrder, customer_id: Number(event.target.value) });
+  };
+
+  const handleOrderDateChange = (event) => {
+    setOrderDate(event.target.value);
+    setNewOrder({ ...newOrder, order_date: event.target.value });
   };
 
   function handleExtra500mlChange(e) {
@@ -317,6 +313,15 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
           value={selectedStoreId}
           onChange={handleStoreChange}
           type="white"
+        />
+      </FormRow>
+
+      <FormRow label={"Order date"}>
+        <Input
+          type="text"
+          value={orderDate}
+          onChange={(e) => handleOrderDateChange(e)}
+          disabled={!isAdmin}
         />
       </FormRow>
 
