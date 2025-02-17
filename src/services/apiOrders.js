@@ -152,3 +152,19 @@ export async function getOrdersAfterDate(date) {
 
   return data;
 }
+
+// Returns all orders that were created between the given dates.
+export async function getOrdersBetweenDates(startDate, endDate) {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*, customers(store_name, owner_name, routes(*))")
+    .gte("order_date", startDate)
+    .lte("order_date", endDate)
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    throw new Error("Orders could not be loaded");
+  }
+  return data;
+}

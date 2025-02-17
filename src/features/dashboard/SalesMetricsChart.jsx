@@ -41,12 +41,12 @@ function generateStrokeColors(numMetrics) {
   return colors;
 }
 
-function SalesMetricsChart({ orders, numDays }) {
+function SalesMetricsChart({ orders, startDate, endDate }) {
   const { isDarkMode } = useDarkMode();
 
   const allDates = eachDayOfInterval({
-    start: subDays(new Date(), numDays - 1),
-    end: new Date(),
+    start: startDate,
+    end: endDate,
   });
 
   const metrics = ["bill_value", "profit", "order_count"];

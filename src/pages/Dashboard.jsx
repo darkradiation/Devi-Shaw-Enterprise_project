@@ -7,9 +7,10 @@ function Dashboard() {
   return (
     <>
       {/* <Row type="horizontal">
-        <Heading as="h4">Dashboard</Heading>
+        
       </Row> */}
-      <Row>
+      <Row type="horizontal">
+        <Heading as="h4">Dashboard</Heading>
         <DashboardFilter />
       </Row>
       <Row>{<DashboardLayout />}</Row>

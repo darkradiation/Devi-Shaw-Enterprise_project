@@ -3,14 +3,12 @@ import styled from "styled-components";
 import Spinner from "../../ui/Spinner";
 import Stats from "./Stats";
 import SalesChart from "./SalesChart";
-// import DurationChart from "./DurationChart";
-// import TodayActivity from "../check-in-out/TodayActivity";
-
-import { useRecentOrders } from "./useRecentOrders";
 import SalesMetricsChart from "./SalesMetricsChart";
 import ItemShareChart from "./ItemShareChart";
 import TodayActivity from "./TodayActivity";
 import Row from "../../ui/Row";
+
+import { useFilteredOrders } from "./useFilteredOrders";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -18,12 +16,12 @@ const StyledDashboardLayout = styled.div`
 `;
 
 function DashboardLayout() {
-  const { isLoadingRecentOrders, recentOrders, numDays } = useRecentOrders();
-  const isWorking = isLoadingRecentOrders;
+  const { isLoading, orders, startDate, endDate, numDays } =
+    useFilteredOrders();
+  const isWorking = isLoading;
   if (isWorking) return <Spinner />;
-  // console.log(recentOrders);
 
-  if (recentOrders?.length === 0)
+  if (orders?.length === 0)
     return (
       <StyledDashboardLayout>
         {numDays === 1 && <TodayActivity />}
@@ -33,13 +31,19 @@ function DashboardLayout() {
 
   return (
     <StyledDashboardLayout>
-      <Stats orders={recentOrders} numDays={numDays} />
+      <Stats orders={orders} />
       {numDays === 1 && <TodayActivity />}
-      {numDays > 1 && <SalesChart orders={recentOrders} numDays={numDays} />}
       {numDays > 1 && (
-        <SalesMetricsChart orders={recentOrders} numDays={numDays} />
+        <SalesChart orders={orders} startDate={startDate} endDate={endDate} />
       )}
-      <ItemShareChart orders={recentOrders} />
+      {numDays > 1 && (
+        <SalesMetricsChart
+          orders={orders}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      )}
+      <ItemShareChart orders={orders} />
     </StyledDashboardLayout>
   );
 }

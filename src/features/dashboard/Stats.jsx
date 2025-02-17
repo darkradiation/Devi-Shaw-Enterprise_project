@@ -13,7 +13,7 @@ const StyledStats = styled.div`
   /* gap: 1.2rem; */
 `;
 
-function Stats({ orders, numDays }) {
+function Stats({ orders }) {
   const numOrders = orders.length;
 
   const sales = orders.reduce((acc, cur) => acc + cur.bill_value, 0);

@@ -41,7 +41,7 @@ function generateStrokeColors(numItems) {
   return colors;
 }
 
-function SalesChart({ orders, numDays }) {
+function SalesChart({ orders, startDate, endDate }) {
   const { isDarkMode } = useDarkMode();
   const { isLoadingStock, error, stock } = useStock();
 
@@ -49,8 +49,8 @@ function SalesChart({ orders, numDays }) {
   if (error) return <p>Error: {error.message}</p>;
 
   const allDates = eachDayOfInterval({
-    start: subDays(new Date(), numDays - 1),
-    end: new Date(),
+    start: startDate,
+    end: endDate,
   });
 
   const itemIds = stock.map((item) => item.id);
