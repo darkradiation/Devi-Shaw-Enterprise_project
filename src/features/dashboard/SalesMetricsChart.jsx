@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { useDarkMode } from "../../context/DarkModeContext";
-import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import { eachDayOfInterval, format, isSameDay } from "date-fns";
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
@@ -56,8 +56,8 @@ function SalesMetricsChart({ orders, startDate, endDate }) {
     const metricValues = {};
     metrics.forEach((metric) => {
       metricValues[metric] = Number(
-        calculateMetric(orders, date, metric)
-      ).toFixed(2);
+        calculateMetric(orders, date, metric).toFixed(2)
+      );
     });
     return {
       label: format(date, "MMM dd"),
@@ -102,7 +102,7 @@ function SalesMetricsChart({ orders, startDate, endDate }) {
               type="monotone"
               stroke={strokeColors[index]}
               strokeWidth={2}
-              fillOpacity={0} // to make the chart transparent
+              fillOpacity={0.3} // to make the chart transparent
               name={metric.replace("_", " ")}
               unit={metric === "order_count" ? "" : ""}
             />
