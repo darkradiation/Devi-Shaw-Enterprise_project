@@ -33,6 +33,7 @@ function DashboardLayout() {
     <StyledDashboardLayout>
       <Stats orders={orders} />
       {numDays === 1 && <TodayActivity />}
+      <ItemShareChart orders={orders} />
       {numDays > 1 && (
         <SalesChart orders={orders} startDate={startDate} endDate={endDate} />
       )}
@@ -43,7 +44,6 @@ function DashboardLayout() {
           endDate={endDate}
         />
       )}
-      <ItemShareChart orders={orders} />
     </StyledDashboardLayout>
   );
 }

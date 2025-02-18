@@ -292,36 +292,41 @@ function OrderDetails({ order }) {
     updateOrder({ id, updated_order: modifiedOrder });
   }
 
-  const freeItems = order.order_items.reduce((accumulator, orderItem) => {
-    if (orderItem.free_items && orderItem.free_items.length > 0) {
-      orderItem.free_items.forEach((freeItem) => {
-        const existingItem = accumulator.find(
-          (item) => item.item_id === freeItem.free_item_id
-        );
+  const freeItems = order.order_items
+    .reduce((accumulator, orderItem) => {
+      if (orderItem.free_items && orderItem.free_items.length > 0) {
+        orderItem.free_items.forEach((freeItem) => {
+          if (freeItem.free_item_quantity > 0) {
+            // Only include items with quantity > 0
+            const existingItem = accumulator.find(
+              (item) => item.item_id === freeItem.free_item_id
+            );
 
-        if (existingItem) {
-          existingItem.item_quantity += freeItem.free_item_quantity;
-          existingItem.buying_price += freeItem.free_value_buying_price;
-          existingItem.selling_price += freeItem.free_value_mrp_price;
-        } else {
-          accumulator.push({
-            item_id: freeItem.free_item_id,
-            item_name: freeItem.free_item_name,
-            buying_price: freeItem.free_value_buying_price,
-            selling_price: freeItem.free_value_mrp_price,
-            item_quantity: freeItem.free_item_quantity,
-          });
-        }
-      });
-    }
-    return accumulator;
-  }, []);
+            if (existingItem) {
+              existingItem.item_quantity += freeItem.free_item_quantity;
+              existingItem.buying_price += freeItem.free_value_buying_price;
+              existingItem.selling_price += freeItem.free_value_mrp_price;
+            } else {
+              accumulator.push({
+                item_id: freeItem.free_item_id,
+                item_name: freeItem.free_item_name,
+                buying_price: freeItem.free_value_buying_price,
+                selling_price: freeItem.free_value_mrp_price,
+                item_quantity: freeItem.free_item_quantity,
+              });
+            }
+          }
+        });
+      }
+      return accumulator;
+    }, [])
+    .filter((item) => item.item_quantity > 0);
 
-  // console.log(freeItems);
+  const noFreeItems = freeItems.length === 0;
 
-  const noFreeItems = freeItems.every((item) => item.item_quantity === 0);
-  const filteredOrderItems =
-    orderItems[0].id === 0 ? orderItems.slice(1) : orderItems;
+  const filteredOrderItems = orderItems.filter(
+    (item) => item.item_quantity > 0
+  );
 
   const handleLocate = () => {
     if (!store_geoLink && !store_address && !store_name) return;
