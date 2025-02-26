@@ -1,4 +1,4 @@
-import {format, addDays} from "date-fns";
+import { format, addDays } from "date-fns";
 import styled from "styled-components";
 
 import Spinner from "../../ui/Spinner";
@@ -12,7 +12,10 @@ import Button from "../../ui/Button";
 
 import { useFilteredOrders } from "./useFilteredOrders";
 import { useIsAdmin } from "../authentication/useIsAdmin";
-import { downloadModifiedOrdersCSV } from "../../services/apiDownloadCsv";
+import {
+  downloadModifiedOrdersCSV,
+  downloadModifiedStockHistoryCSV,
+} from "../../services/apiDownloadCsv";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -30,7 +33,7 @@ const DownLoadBox = styled.div`
 `;
 
 function DashboardLayout() {
-  const {isAdmin} = useIsAdmin();
+  const { isAdmin } = useIsAdmin();
   const { isLoading, orders, startDate, endDate, numDays } =
     useFilteredOrders();
   const isWorking = isLoading;
@@ -44,7 +47,7 @@ function DashboardLayout() {
   if (orders?.length === 0)
     return (
       <StyledDashboardLayout>
-        {numDays === 1 && <TodayActivity />}
+        {/* {numDays === 1 && <TodayActivity />} */}
         <Row>no orders found.</Row>
       </StyledDashboardLayout>
     );
@@ -52,7 +55,7 @@ function DashboardLayout() {
   return (
     <StyledDashboardLayout>
       <Stats orders={orders} />
-      {numDays === 1 && <TodayActivity />}
+      {/* {numDays === 1 && <TodayActivity />} */}
       <ItemShareChart orders={orders} />
       {numDays > 1 && (
         <SalesChart orders={orders} startDate={startDate} endDate={endDate} />
@@ -67,8 +70,26 @@ function DashboardLayout() {
 
       {isAdmin && (
         <DownLoadBox>
-            <Button onClick={()=>downloadModifiedOrdersCSV({startDate: formattedStartDate, endDate: formattedEndDate})}>Download Orders</Button>
-            <Button onClick={()=>downloadModifiedStockHistoryCSV({startDate: formattedStartDate, endDate: formattedEndDate})}>Download Stock History</Button>
+          <Button
+            onClick={() =>
+              downloadModifiedOrdersCSV({
+                startDate: formattedStartDate,
+                endDate: formattedEndDate,
+              })
+            }
+          >
+            Download Orders
+          </Button>
+          <Button
+            onClick={() =>
+              downloadModifiedStockHistoryCSV({
+                startDate: formattedStartDate,
+                endDate: formattedEndDate,
+              })
+            }
+          >
+            Download Stock History
+          </Button>
         </DownLoadBox>
       )}
     </StyledDashboardLayout>
