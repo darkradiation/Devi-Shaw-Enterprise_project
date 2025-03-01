@@ -16,6 +16,7 @@ import { useRoutes } from "../routes/useRoutes";
 import { fromToday } from "../../utils/date";
 import { useGeolocated } from "react-geolocated";
 import { useAddCustomer } from "./useAddCustomer";
+import { default_owner_pic, default_store_pic } from "../../services/supabase";
 const StackedButtons = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -31,11 +32,6 @@ const Label = styled.label`
   padding: 0 0.3rem;
   /* color: var(--color-brand-500); */
 `;
-
-const default_store_pic =
-  "https://nnfnobdpdtdimlugwmig.supabase.co/storage/v1/object/public/customer_store_pictures/0.38892795734812036-default_store_image.jpg";
-const default_owner_pic =
-  "https://nnfnobdpdtdimlugwmig.supabase.co/storage/v1/object/public/customer_owner_pictures/0.034979561436823126-default_store_owner_image.jpeg";
 
 function CreateCustomerForm({ onCloseModal }) {
   const [routeId, setRouteId] = useState("1");
