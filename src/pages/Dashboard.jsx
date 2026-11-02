@@ -11,6 +11,8 @@ function Dashboard() {
       </Row> */}
       <Row type="horizontal">
         <Heading as="h4">Dashboard</Heading>
+      </Row>
+      <Row>
         <DashboardFilter />
       </Row>
       <Row>{<DashboardLayout />}</Row>

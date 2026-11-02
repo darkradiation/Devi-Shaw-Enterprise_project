@@ -148,68 +148,74 @@
 
 import styled from "styled-components";
 import Heading from "../../ui/Heading";
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 import { useStock } from "../stock/useStock";
-import { useDarkMode } from "../../context/DarkModeContext";
 
 const ChartBox = styled.div`
   /* Box */
   background-color: var(--color-grey-0);
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-md);
-  padding: 1.2rem 0;
+  padding: 1.2rem 1.2rem;
   grid-column: 1/-1;
 
   & > *:first-child {
-    margin: 0 3.5rem 0.3rem 0;
-    text-align: right;
-  }
-
-  & .recharts-pie-label-text {
-    font-weight: 600;
+    margin-bottom: 1rem;
   }
 `;
 
-function generateColors(numItems) {
-  const colors = [];
-  for (let i = 0; i < numItems; i++) {
-    colors.push(`#${Math.floor(Math.random() * 16777215).toString(16)}`);
-  }
-  return colors;
-}
+const Bars = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
-// Custom Tooltip to display breakdown as "ItemName: X pt Y pcs"
-const CustomTooltip = ({ active, payload, colorsConfig }) => {
-  if (active && payload && payload.length) {
-    const dataPoint = payload[0].payload;
-    return (
-      <div
-        style={{
-          backgroundColor: colorsConfig.background,
-          color: colorsConfig.text,
-          border: "1px solid #ccc",
-          padding: "10px",
-          borderRadius: "5px",
-        }}
-      >
-        <p style={{ fontWeight: "bold", marginBottom: "5px" }}>
-          {dataPoint.itemName}
-        </p>
-        <p style={{ margin: 0, fontSize: "1.4rem" }}>
-          {`${dataPoint.itemName}: ${dataPoint.breakdown}`}
-        </p>
-      </div>
-    );
+const BarRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+
+const BarLabel = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.3rem;
+  color: var(--color-grey-700);
+
+  & > span:last-child {
+    color: var(--color-grey-500);
   }
-  return null;
-};
+`;
+
+const Change = styled.span`
+  margin-left: 0.6rem;
+  font-weight: 500;
+  color: ${(props) =>
+    props.$change > 0
+      ? "var(--color-green-700)"
+      : props.$change < 0
+        ? "var(--color-red-700)"
+        : "var(--color-grey-500)"};
+`;
+
+const Caption = styled.p`
+  margin-top: 1rem;
+  font-size: 1rem;
+  text-align: right;
+  color: var(--color-grey-500);
+`;
+
+const Track = styled.div`
+  height: 0.8rem;
+  border-radius: 100px;
+  background-color: var(--color-grey-100);
+  overflow: hidden;
+`;
+
+const Fill = styled.div`
+  height: 100%;
+  border-radius: 100px;
+  background-color: var(--color-brand-600);
+`;
 
 function prepareData(orders, stock) {
   // We'll accumulate raw totals (as a float) for each item.
@@ -223,7 +229,7 @@ function prepareData(orders, stock) {
         const key = orderItem.item_name;
         // Look up the conversion factor from stock using orderItem.item_id.
         const stockItem = stock.find(
-          (s) => String(s.id) === String(orderItem.item_id)
+          (s) => String(s.id) === String(orderItem.item_id),
         );
         const conversionFactor =
           stockItem && stockItem.quantity_per_pt
@@ -243,7 +249,7 @@ function prepareData(orders, stock) {
           const key = freeItem.free_item_name;
           // Look up conversion factor from stock using freeItem.free_item_id.
           const stockItem = stock.find(
-            (s) => String(s.id) === String(freeItem.free_item_id)
+            (s) => String(s.id) === String(freeItem.free_item_id),
           );
           const conversionFactor =
             stockItem && stockItem.quantity_per_pt
@@ -267,9 +273,9 @@ function prepareData(orders, stock) {
     const pcs = Math.round((rawTotal - pt) * conversionFactor);
     return {
       itemName,
-      // For the pie chart value, we use the integer part (PT)
-      value: pt,
-      // And store a breakdown string for the tooltip.
+      // exact quantity in PT, used for sorting and bar length
+      total: rawTotal,
+      // readable "X pt Y pcs" shown next to the bar
       breakdown: `${pt} pt ${pcs} pcs`,
     };
   });
@@ -277,50 +283,59 @@ function prepareData(orders, stock) {
   return data;
 }
 
-function ItemShareChart({ orders }) {
-  const { isDarkMode } = useDarkMode();
+function ItemShareChart({ orders, prevOrders, compareLabel }) {
   const { isLoadingStock, error, stock } = useStock();
 
   if (isLoadingStock) return null;
   if (error) return <p>Error: {error.message}</p>;
 
-  const data = prepareData(orders, stock);
-  const colors = generateColors(data.length);
+  const data = prepareData(orders, stock).sort((a, b) => b.total - a.total);
+  const grandTotal = data.reduce((acc, cur) => acc + cur.total, 0);
+  const max = data[0]?.total || 1;
 
-  const colorsConfig = isDarkMode
-    ? { text: "#e5e7eb", background: "#18212f" }
-    : { text: "#374151", background: "#fff" };
+  // % change per item vs the previous period (null when it has no earlier sales)
+  const prevTotals = {};
+  if (prevOrders)
+    prepareData(prevOrders, stock).forEach((i) => {
+      prevTotals[i.itemName] = i.total;
+    });
+  const changeOf = (item) =>
+    prevTotals[item.itemName]
+      ? ((item.total - prevTotals[item.itemName]) / prevTotals[item.itemName]) *
+        100
+      : null;
+  const hasChange = data.some((item) => changeOf(item) !== null);
 
   return (
     <ChartBox>
       <Heading as="h4">Item Share in Orders</Heading>
-      <ResponsiveContainer width="90%" height={180}>
-        <PieChart>
-          <Pie
-            data={data}
-            nameKey="itemName"
-            dataKey="value"
-            paddingAngle={3}
-            innerRadius={55}
-            outerRadius={80}
-            cx="40%"
-            cy="50%"
-          >
-            {data.map((entry, index) => (
-              <Cell fill={colors[index]} key={`cell-${index}`} />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip colorsConfig={colorsConfig} />} />
-          <Legend
-            verticalAlign="middle"
-            align="right"
-            width="30%"
-            layout="vertical"
-            iconSize={15}
-            iconType="circle"
-          />
-        </PieChart>
-      </ResponsiveContainer>
+      <Bars>
+        {data.map((item) => {
+          const change = changeOf(item);
+          return (
+            <BarRow key={item.itemName}>
+              <BarLabel>
+                <span>{item.itemName}</span>
+                <span>
+                  {item.breakdown} ·{" "}
+                  {grandTotal ? Math.round((item.total / grandTotal) * 100) : 0}
+                  %
+                  {change !== null && (
+                    <Change $change={change}>
+                      {change > 0 ? "↑" : change < 0 ? "↓" : "–"}{" "}
+                      {Math.abs(Math.round(change))}%
+                    </Change>
+                  )}
+                </span>
+              </BarLabel>
+              <Track>
+                <Fill style={{ width: `${(item.total / max) * 100}%` }} />
+              </Track>
+            </BarRow>
+          );
+        })}
+      </Bars>
+      {hasChange && <Caption>% change vs {compareLabel}</Caption>}
     </ChartBox>
   );
 }

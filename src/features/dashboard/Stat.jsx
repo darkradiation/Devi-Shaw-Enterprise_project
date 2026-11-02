@@ -10,7 +10,7 @@ const StyledStat = styled.div`
   padding: 1rem 0.7rem;
   display: grid;
   grid-template-columns: 4rem 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   column-gap: 1rem;
   row-gap: 0.4rem;
 `;
@@ -48,12 +48,30 @@ const Value = styled.p`
   font-weight: 500;
 `;
 
-function Stat({ icon, title, value, color }) {
+const Delta = styled.span`
+  font-size: 1rem;
+  font-weight: 500;
+  color: ${(props) =>
+    props.$change > 0
+      ? "var(--color-green-700)"
+      : props.$change < 0
+        ? "var(--color-red-700)"
+        : "var(--color-grey-500)"};
+`;
+
+// change = percent change vs the previous period (null when not comparable)
+function Stat({ icon, title, value, color, change }) {
   return (
     <StyledStat>
       <Icon color={color}>{icon}</Icon>
       <Title>{title}</Title>
       <Value>{value}</Value>
+      {change !== undefined && change !== null && (
+        <Delta $change={change}>
+          {change > 0 ? "↑" : change < 0 ? "↓" : "–"}{" "}
+          {Math.abs(Math.round(change))}%
+        </Delta>
+      )}
     </StyledStat>
   );
 }

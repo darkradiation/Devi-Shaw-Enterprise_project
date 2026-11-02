@@ -6,7 +6,7 @@ import Stats from "./Stats";
 import SalesChart from "./SalesChart";
 import SalesMetricsChart from "./SalesMetricsChart";
 import ItemShareChart from "./ItemShareChart";
-import TodayActivity from "./TodayActivity";
+// import TodayActivity from "./TodayActivity";
 import Row from "../../ui/Row";
 import Button from "../../ui/Button";
 
@@ -34,8 +34,15 @@ const DownLoadBox = styled.div`
 
 function DashboardLayout() {
   const { isAdmin } = useIsAdmin();
-  const { isLoading, orders, startDate, endDate, numDays } =
-    useFilteredOrders();
+  const {
+    isLoading,
+    orders,
+    prevOrders,
+    compareLabel,
+    startDate,
+    endDate,
+    numDays,
+  } = useFilteredOrders();
   const isWorking = isLoading;
   if (isWorking) return <Spinner />;
 
@@ -54,9 +61,17 @@ function DashboardLayout() {
 
   return (
     <StyledDashboardLayout>
-      <Stats orders={orders} />
+      <Stats
+        orders={orders}
+        prevOrders={prevOrders}
+        compareLabel={compareLabel}
+      />
       {/* {numDays === 1 && <TodayActivity />} */}
-      <ItemShareChart orders={orders} />
+      <ItemShareChart
+        orders={orders}
+        prevOrders={prevOrders}
+        compareLabel={compareLabel}
+      />
       {numDays > 1 && (
         <SalesChart orders={orders} startDate={startDate} endDate={endDate} />
       )}

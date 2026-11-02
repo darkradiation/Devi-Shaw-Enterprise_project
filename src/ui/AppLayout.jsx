@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Bottombar from "./Bottombar";
 import MainNav from "./MainNav";
@@ -62,6 +62,7 @@ const Watermark = styled.div`
 `;
 
 function AppLayout() {
+  const { pathname } = useLocation();
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -85,9 +86,12 @@ function AppLayout() {
           <Container>
             <Outlet />
           </Container>
-          <Watermark>
-            <Logo size={230} />
-          </Watermark>
+          {/* the dashboard is dense with charts, so no watermark there */}
+          {pathname !== "/dashboard" && (
+            <Watermark>
+              <Logo size={230} />
+            </Watermark>
+          )}
         </Main>
 
         <Bottombar>

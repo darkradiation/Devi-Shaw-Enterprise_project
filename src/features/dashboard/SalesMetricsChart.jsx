@@ -104,10 +104,7 @@ function SalesMetricsChart({ orders, startDate, endDate }) {
 
   return (
     <StyledSalesChart>
-      <Heading as="h4">
-        Sales Metrics, {format(allDates.at(0), "MMM dd yyyy")} &mdash;{" "}
-        {format(allDates.at(-1), "MMM dd yyyy")}
-      </Heading>
+      <Heading as="h4">Sales Metrics</Heading>
       <ResponsiveContainer height={250} width="90%">
         <AreaChart data={data}>
           <XAxis
