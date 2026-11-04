@@ -79,7 +79,7 @@ function OrderRow({ order }) {
       ...order,
       is_delivered: true,
       outstanding_payment: bill_value,
-      delivery_date: fromToday(0),
+      delivery_date: fromToday(0, true),
     };
     delete modifiedOrder["customers"];
     updateOrder({ id, updated_order: modifiedOrder });
@@ -95,7 +95,7 @@ function OrderRow({ order }) {
       modifiedOrder.payments = [];
     }
 
-    const paymentDate = fromToday(0);
+    const paymentDate = fromToday(0, true);
     modifiedOrder.payments.push({ amount, date: paymentDate });
 
     if (amount < outstanding_payment) {

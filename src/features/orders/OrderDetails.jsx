@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { add, format } from "date-fns";
+import { add } from "date-fns";
 import { MdCall } from "react-icons/md";
 import { ImCancelCircle, ImLocation } from "react-icons/im";
 import { HiPencil } from "react-icons/hi2";
@@ -16,6 +16,8 @@ import ConfirmUpdate from "./ConfirmUpdate";
 import { useCancelOrder } from "./useCancelOrder";
 import { useUpdateOrder } from "./useUpdateOrder";
 import ConfirmPayment from "./ConfirmPayment";
+import { formatDateTime } from "../../utils/date";
+import { formatCurrency } from "../../utils/helpers";
 
 const StyledOrderDetailsComponent = styled.div`
   /* width: 75vw; */
@@ -90,20 +92,6 @@ const PriceItem = styled.div`
   }
 `;
 
-const PaymentItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  & div:first-child {
-    font-size: 1.3rem;
-    font-weight: 600;
-  }
-  & div:last-child {
-    font-size: 1.4rem;
-    padding: 0 1.5rem;
-  }
-`;
-
 const DateBox = styled.div`
   width: 100%;
   display: flex;
@@ -112,6 +100,67 @@ const DateBox = styled.div`
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-md);
   padding: 1rem 2rem;
+`;
+
+const PaymentSummary = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  font-size: 1.1rem;
+  color: var(--color-grey-500);
+
+  & strong {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 1.4rem;
+    color: var(--color-grey-700);
+  }
+
+  & div:last-child strong {
+    color: ${(props) =>
+      props.$balance > 0 ? "var(--color-red-700)" : "var(--color-green-700)"};
+  }
+`;
+
+const ProgressTrack = styled.div`
+  height: 0.8rem;
+  border-radius: 100px;
+  background-color: var(--color-grey-100);
+  overflow: hidden;
+`;
+
+const ProgressFill = styled.div`
+  height: 100%;
+  border-radius: 100px;
+  background-color: var(--color-green-700);
+`;
+
+const HistoryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.3rem;
+
+  & small {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--color-grey-500);
+  }
+
+  & strong {
+    font-size: 1.4rem;
+  }
+
+  &:not(:last-child) {
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--color-grey-100);
+  }
+`;
+
+const Muted = styled.div`
+  font-size: 1.3rem;
+  color: var(--color-grey-500);
 `;
 
 const IconBox = styled.div`
@@ -150,11 +199,6 @@ const Stacked = styled.div`
     font-size: 1.4rem;
   }
   margin-bottom: 0.5rem;
-`;
-
-const Stacked4 = styled.div`
-  display: flex;
-  justify-content: space-between;
 `;
 
 const Tag = styled.div`
@@ -240,7 +284,6 @@ function OrderDetails({ order }) {
   const { updateOrder, isUpdatingOrder } = useUpdateOrder();
   const isWorking = isUpdatingOrder || isCancellingOrder;
 
-  const status = is_delivered ? (is_paid ? "paid" : "due") : "pending";
   const tag = is_delivered ? (is_paid ? "green" : "red") : "blue";
 
   const action = is_delivered
@@ -256,12 +299,30 @@ function OrderDetails({ order }) {
 
   const isCancellable = !is_delivered;
 
+  // amounts for the payment block (outstanding_payment is only set on delivery)
+  const paidAmount = is_paid
+    ? bill_value
+    : is_delivered
+      ? bill_value - (outstanding_payment ?? bill_value)
+      : 0;
+  const balance = Math.max(bill_value - paidAmount, 0);
+  const paymentStatus = !is_delivered
+    ? "Awaiting delivery"
+    : is_paid
+      ? "Paid in full"
+      : paidAmount > 0
+        ? "Partially paid"
+        : "Unpaid";
+  const paidPercent = bill_value
+    ? Math.min((paidAmount / bill_value) * 100, 100)
+    : 0;
+
   function markDelivered() {
     const modifiedOrder = {
       ...order,
       is_delivered: true,
       outstanding_payment: bill_value,
-      delivery_date: fromToday(0),
+      delivery_date: fromToday(0, true),
     };
     delete modifiedOrder["customers"];
     updateOrder({ id, updated_order: modifiedOrder });
@@ -277,7 +338,7 @@ function OrderDetails({ order }) {
       modifiedOrder.payments = [];
     }
 
-    const paymentDate = fromToday(0);
+    const paymentDate = fromToday(0, true);
     modifiedOrder.payments.push({ amount, date: paymentDate });
 
     if (amount < outstanding_payment) {
@@ -299,7 +360,7 @@ function OrderDetails({ order }) {
           if (freeItem.free_item_quantity > 0) {
             // Only include items with quantity > 0
             const existingItem = accumulator.find(
-              (item) => item.item_id === freeItem.free_item_id
+              (item) => item.item_id === freeItem.free_item_id,
             );
 
             if (existingItem) {
@@ -325,7 +386,7 @@ function OrderDetails({ order }) {
   const noFreeItems = freeItems.length === 0;
 
   const filteredOrderItems = orderItems.filter(
-    (item) => item.item_quantity > 0
+    (item) => item.item_quantity > 0,
   );
 
   const handleLocate = () => {
@@ -334,14 +395,14 @@ function OrderDetails({ order }) {
       store_geoLink
         ? store_geoLink
         : store_address
-        ? `https://www.google.com/maps/search/?api=1&query=${store_address}`
-        : `https://www.google.com/maps/search/?api=1&query=${store_name}`
+          ? `https://www.google.com/maps/search/?api=1&query=${store_address}`
+          : `https://www.google.com/maps/search/?api=1&query=${store_name}`,
     );
   };
 
   const handleCall = () => {
     window.open(
-      `https://web.whatsapp.com/send?phone=${owner_phone_no}&text=Hi%20${owner_name}%2C%20I%20am%20interested%20in%20your%20store%20at%20${store_address}%20and%20would%20like%20to%20know%20more%20about%20your%20store.`
+      `https://web.whatsapp.com/send?phone=${owner_phone_no}&text=Hi%20${owner_name}%2C%20I%20am%20interested%20in%20your%20store%20at%20${store_address}%20and%20would%20like%20to%20know%20more%20about%20your%20store.`,
     );
   };
 
@@ -349,11 +410,73 @@ function OrderDetails({ order }) {
     <StyledOrderDetailsComponent>
       <HeadingBox>
         <Heading as="h2">{store_name}</Heading>
-        <Stacked4>
-          <div>{owner_name}</div>
-          <Tag type={tag}>{status}</Tag>
-        </Stacked4>
+        <div>{owner_name}</div>
       </HeadingBox>
+
+      <DateBox>
+        <Stacked>
+          <div>Order date</div>
+          <BlueTag>{formatDateTime(order_date)}</BlueTag>
+        </Stacked>
+        <Stacked>
+          <div>Delivery date</div>
+          {delivery_date ? (
+            <YellowTag>{formatDateTime(delivery_date)}</YellowTag>
+          ) : (
+            <Muted>Not delivered yet</Muted>
+          )}
+        </Stacked>
+        {payment_date && (
+          <Stacked>
+            <div>Payment date</div>
+            <GreenTag>{formatDateTime(payment_date)}</GreenTag>
+          </Stacked>
+        )}
+      </DateBox>
+
+      <DataBox>
+        <Tag type={tag}>{paymentStatus}</Tag>
+        <PaymentSummary $balance={balance}>
+          <div>
+            Bill value
+            <strong>{formatCurrency(bill_value)}</strong>
+          </div>
+          <div>
+            Paid
+            <strong>{formatCurrency(paidAmount)}</strong>
+          </div>
+          <div>
+            Balance
+            <strong>{formatCurrency(balance)}</strong>
+          </div>
+        </PaymentSummary>
+        <ProgressTrack>
+          <ProgressFill style={{ width: `${paidPercent}%` }} />
+        </ProgressTrack>
+        {payments?.length > 0 ? (
+          <div>
+            {payments.map((payment, index) => (
+              <HistoryRow key={index}>
+                <div>
+                  Payment {index + 1}
+                  <small>{formatDateTime(payment.date)}</small>
+                </div>
+                <strong>{formatCurrency(payment.amount)}</strong>
+              </HistoryRow>
+            ))}
+          </div>
+        ) : is_paid && payment_date ? (
+          <HistoryRow>
+            <div>
+              Paid in full
+              <small>{formatDateTime(payment_date)}</small>
+            </div>
+            <strong>{formatCurrency(bill_value)}</strong>
+          </HistoryRow>
+        ) : (
+          <Muted>No payments recorded yet</Muted>
+        )}
+      </DataBox>
 
       <DataBox>
         <Heading as="h3">Order Items</Heading>
@@ -450,42 +573,6 @@ function OrderDetails({ order }) {
           <div>{profit}</div>
         </PriceItem>
       </PricingBox>
-
-      {payments && (
-        <PricingBox>
-          {payments.map((payment, index) => (
-            <PaymentItem key={index}>
-              <div>{format(payment.date, "MMM dd,yyyy")}</div>
-              <div>{payment.amount}</div>
-            </PaymentItem>
-          ))}
-          {outstanding_payment !== 0 && (
-            <PaymentItem>
-              <div>Due</div>
-              <div>{outstanding_payment}</div>
-            </PaymentItem>
-          )}
-        </PricingBox>
-      )}
-
-      <DateBox>
-        <Stacked>
-          <div>Order date</div>
-          <BlueTag>{format(order_date, "MMM dd,yyyy")}</BlueTag>
-        </Stacked>
-        {delivery_date && (
-          <Stacked>
-            <div>Delivery date</div>
-            <YellowTag>{format(delivery_date, "MMM dd,yyyy")}</YellowTag>
-          </Stacked>
-        )}
-        {payment_date && (
-          <Stacked>
-            <div>Payment date</div>
-            <GreenTag>{format(payment_date, "MMM dd,yyyy")}</GreenTag>
-          </Stacked>
-        )}
-      </DateBox>
 
       <IconBox>
         <ButtonIcon size="lg" onClick={handleCall}>

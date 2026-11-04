@@ -33,7 +33,7 @@ const Input = styled.input`
   }
 `;
 
-function Searchbar() {
+function Searchbar({ placeholder = "Search by name" }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get("search") || ""
@@ -43,6 +43,8 @@ function Searchbar() {
     setSearchTerm(e.target.value);
     // setSearchParams({ search: e.target.value });
     searchParams.set("search", e.target.value);
+    // a new search starts from the first page (page 2 may not exist any more)
+    searchParams.set("page", "1");
     setSearchParams(searchParams);
   };
 
@@ -52,7 +54,7 @@ function Searchbar() {
         type="text"
         value={searchTerm}
         onChange={handleSearch}
-        placeholder="Search by name"
+        placeholder={placeholder}
       />
       <div>
         <FaSearch />

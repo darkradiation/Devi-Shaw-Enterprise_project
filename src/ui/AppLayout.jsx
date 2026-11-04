@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import Bottombar from "./Bottombar";
 import MainNav from "./MainNav";
 import Header from "./Header";
-import Logo from "./Logo";
 
 const Background = styled.div`
   background: rgb(63, 94, 251);
@@ -51,18 +50,7 @@ const StyledFooter = styled.div`
   color: #374151;
 `;
 
-const Watermark = styled.div`
-  position: fixed;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 20%;
-  z-index: 1;
-  pointer-events: none;
-`;
-
 function AppLayout() {
-  const { pathname } = useLocation();
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -86,12 +74,6 @@ function AppLayout() {
           <Container>
             <Outlet />
           </Container>
-          {/* the dashboard is dense with charts, so no watermark there */}
-          {pathname !== "/dashboard" && (
-            <Watermark>
-              <Logo size={230} />
-            </Watermark>
-          )}
         </Main>
 
         <Bottombar>

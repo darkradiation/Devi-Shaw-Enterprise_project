@@ -12,7 +12,7 @@ function OrderTableOperations() {
   const [searchParams, setSearchParams] = useSearchParams();
   return (
     <>
-      <Searchbar />
+      <Searchbar placeholder="Search by store name or order id" />
       <Menus.Menu>
         <Menus.Toggle id="ordersSortFilter" icon={<FaFilter />} />
         <Menus.HList id="ordersSortFilter">

@@ -24,14 +24,20 @@ export async function getOrders({
   }
 
   // COMBINED SEARCH AND DAY FILTER
-  if (searchQuery || (filterByDay && filterByDay !== "all")) {
+  // The search matches the store name, or the order id when it is a number.
+  const hasDayFilter = filterByDay && filterByDay !== "all";
+  const searchId = /^\d+$/.test(searchQuery?.trim() || "")
+    ? Number(searchQuery.trim())
+    : null;
+
+  if (searchQuery || hasDayFilter) {
     let customerQuery = supabase.from("customers").select("id");
 
     if (searchQuery) {
       customerQuery = customerQuery.ilike("store_name", `%${searchQuery}%`);
     }
 
-    if (filterByDay && filterByDay !== "all") {
+    if (hasDayFilter) {
       customerQuery = customerQuery.eq("route_id", filterByDay);
     }
 
@@ -42,12 +48,36 @@ export async function getOrders({
       throw new Error("Couldn't fetch customers");
     }
 
-    if (customers.length === 0) {
-      return { data: [], count: 0 };
-    }
-
     const customerIds = customers.map((c) => c.id);
-    query = query.in("customer_id", customerIds);
+
+    if (searchId === null) {
+      if (customerIds.length === 0) return { data: [], count: 0 };
+      query = query.in("customer_id", customerIds);
+    } else {
+      // order id match (kept inside the selected route, if any) OR name match
+      let idCondition = `id.eq.${searchId}`;
+      if (hasDayFilter) {
+        const { data: routeCustomers, error: routeError } = await supabase
+          .from("customers")
+          .select("id")
+          .eq("route_id", filterByDay);
+        if (routeError) {
+          console.error(routeError);
+          throw new Error("Couldn't fetch customers");
+        }
+        const routeIds = routeCustomers.map((c) => c.id);
+        idCondition = routeIds.length
+          ? `and(id.eq.${searchId},customer_id.in.(${routeIds.join(",")}))`
+          : null;
+      }
+
+      const conditions = [];
+      if (idCondition) conditions.push(idCondition);
+      if (customerIds.length)
+        conditions.push(`customer_id.in.(${customerIds.join(",")})`);
+      if (conditions.length === 0) return { data: [], count: 0 };
+      query = query.or(conditions.join(","));
+    }
   }
 
   // SORT

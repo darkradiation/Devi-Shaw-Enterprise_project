@@ -1,4 +1,4 @@
-import { add } from "date-fns";
+import { add, format } from "date-fns";
 
 export function fromToday(numDays, withTime = false) {
   const date = add(new Date(), { days: numDays });
@@ -17,3 +17,22 @@ export const getToday = function (options = {}) {
   else today.setUTCHours(0, 0, 0, 0);
   return today.toISOString();
 };
+
+// Dates saved inside JSON (e.g. payments) have no timezone suffix but are UTC.
+export function parseDbDate(value) {
+  if (!value) return null;
+  const hasZone = /([zZ]|[+-]\d{2}:?\d{2})$/.test(value);
+  return new Date(hasZone ? value : `${value}Z`);
+}
+
+// "Nov 04, 2026 · 11:07 PM" in local time; date only for old records that were
+// saved at exactly midnight UTC (they never had a real time)
+export function formatDateTime(value) {
+  const date = parseDbDate(value);
+  if (!date || isNaN(date)) return "";
+  const isDateOnly =
+    date.getUTCHours() === 0 &&
+    date.getUTCMinutes() === 0 &&
+    date.getUTCSeconds() === 0;
+  return format(date, isDateOnly ? "MMM dd, yyyy" : "MMM dd, yyyy · h:mm a");
+}
