@@ -1,51 +1,135 @@
 import { useState } from "react";
 import styled from "styled-components";
-import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
-import Checkbox from "../../ui/Checkbox";
 import { useScheme1ByItemId } from "../schemes/useScheme1ByItemId";
 import { useScheme2ByItemId } from "../schemes/useScheme2ByItemId";
 import { useScheme3ByItemId } from "../schemes/useScheme3ByItemId";
 import toast from "react-hot-toast";
 
-const Label = styled.label`
-  font-weight: 500;
-  font-size: 1.2rem;
-  position: absolute;
-  left: 2rem;
-  top: 0.4rem;
+const Card = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.2rem;
+  border: 1px solid
+    ${(props) =>
+      props.$active ? "var(--color-brand-600)" : "var(--color-grey-200)"};
+  border-radius: var(--border-radius-md);
   background-color: var(--color-grey-0);
-  padding: 0 0.3rem;
+  opacity: ${(props) => (props.$disabled ? 0.55 : 1)};
 `;
-const Stacked1 = styled.div`
+
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 0 1rem;
+  align-items: flex-start;
   gap: 1rem;
+`;
 
-  & div {
-    width: 50%;
-    position: relative;
-    /* margin-top: 1rem; */
-    padding: 1.2rem 0 0 0;
+const Name = styled.div`
+  font-size: 1.5rem;
+  font-weight: 600;
+`;
+
+const Meta = styled.div`
+  margin-top: 0.2rem;
+  font-size: 1.2rem;
+  color: var(--color-grey-500);
+`;
+
+const Subtotal = styled.div`
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-brand-600);
+`;
+
+const StockChip = styled.span`
+  display: inline-block;
+  padding: 0.2rem 0.8rem;
+  border-radius: 100px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  background-color: ${(props) =>
+    props.$out ? "var(--color-red-100)" : "var(--color-green-100)"};
+  color: ${(props) =>
+    props.$out ? "var(--color-red-700)" : "var(--color-green-700)"};
+`;
+
+const Controls = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+
+  & > label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-grey-500);
   }
-  & div:last-child {
-    margin-bottom: 1rem;
+
+  & input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 `;
-const Stacked2 = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 0 1rem;
-  gap: 1rem;
 
-  & span:first-child {
+const Stepper = styled.div`
+  display: flex;
+  gap: 0.4rem;
+
+  & input {
+    text-align: center;
     font-weight: 600;
   }
-  & span:last-child {
-    font-size: smaller;
-    /* font-weight: 600; */
+`;
+
+const StepButton = styled.button`
+  flex: 0 0 3.6rem;
+  font-size: 2rem;
+  line-height: 1;
+  border: 1px solid var(--color-grey-300);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-grey-0);
+  color: var(--color-brand-600);
+
+  &:disabled {
+    opacity: 0.4;
   }
+`;
+
+const Pills = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+`;
+
+const Pill = styled.button`
+  padding: 0.7rem 0.4rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  border-radius: 100px;
+  border: 1px solid
+    ${(props) =>
+      props.$active ? "var(--color-brand-600)" : "var(--color-grey-300)"};
+  background-color: ${(props) =>
+    props.$active ? "var(--color-brand-600)" : "transparent"};
+  color: ${(props) => (props.$active ? "#fff" : "var(--color-grey-700)")};
+
+  &:disabled {
+    opacity: 0.4;
+  }
+`;
+
+const SchemeNote = styled.p`
+  font-size: 1.2rem;
+  color: var(--color-grey-500);
 `;
 
 function CreateOrderItem({ item, newOrder, setNewOrder }) {
@@ -101,7 +185,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
     setSelectedScheme(isChecked ? 1 : 0);
     updateFreeItemsString(
       isChecked ? 1 : 0,
-      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity
+      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity,
     );
   };
 
@@ -113,7 +197,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
     setSelectedScheme(isChecked ? 2 : 0);
     updateFreeItemsString(
       isChecked ? 2 : 0,
-      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity
+      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity,
     );
   };
 
@@ -125,7 +209,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
     setSelectedScheme(isChecked ? 3 : 0);
     updateFreeItemsString(
       isChecked ? 3 : 0,
-      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity
+      newOrder.order_items.find((item) => item.item_id === id)?.item_quantity,
     );
   };
 
@@ -171,7 +255,7 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
   const updateOrderItem = (itemId, updates) => {
     // console.log(itemId, updates);
     const existingItemIndex = newOrder.order_items.findIndex(
-      (item) => item.item_id === itemId
+      (item) => item.item_id === itemId,
     );
     const updatedOrderItems = [...newOrder.order_items];
 
@@ -204,65 +288,98 @@ function CreateOrderItem({ item, newOrder, setNewOrder }) {
     return levels.includes(quantity) ? quantity : null;
   };
 
+  const noStock = available_pt <= 0;
+  const freeText = freeItemsString.split(" ,").filter(Boolean).join(", ");
+  const subtotal = (base_selling_price_per_pt - discountPerPt) * quantity;
+  const schemes = [
+    { n: 1, active: addScheme1, onChange: handleAddScheme1Change },
+    { n: 2, active: addScheme2, onChange: handleAddScheme2Change },
+    { n: 3, active: addScheme3, onChange: handleAddScheme3Change },
+  ];
+
   return (
-    <FormRow type="order">
-      <Stacked2>
-        <span>{item_name}</span>
-        <span>
-          Rs.{base_selling_price_per_pt} -- {available_pt} pt.
-        </span>
-      </Stacked2>
-      <Stacked1>
+    <Card $active={quantity > 0} $disabled={noStock}>
+      <Header>
         <div>
-          <Label htmlFor="quantity">quantity</Label>
-          <Input
-            type="text"
-            id="quantity"
-            value={quantity}
-            onChange={handleQuantityChange}
-            disabled={available_pt <= 0}
-          />
+          <Name>{item_name}</Name>
+          <Meta>Rs.{base_selling_price_per_pt} per pt</Meta>
         </div>
-        <div>
-          <Label htmlFor="discountPerPt">Discount/pt</Label>
+        <div style={{ textAlign: "right" }}>
+          <StockChip $out={noStock}>
+            {noStock ? "Out of stock" : `${available_pt} pt in stock`}
+          </StockChip>
+          {quantity > 0 && <Subtotal>Rs.{subtotal.toFixed(2)}</Subtotal>}
+        </div>
+      </Header>
+
+      <Controls>
+        <Field>
+          <label htmlFor={`quantity-${id}`}>Quantity (pt)</label>
+          <Stepper>
+            <StepButton
+              type="button"
+              aria-label={`decrease ${item_name} quantity`}
+              disabled={noStock || quantity <= 0}
+              onClick={() =>
+                handleQuantityChange({ target: { value: quantity - 1 } })
+              }
+            >
+              −
+            </StepButton>
+            <Input
+              type="text"
+              inputMode="numeric"
+              id={`quantity-${id}`}
+              value={quantity}
+              onChange={handleQuantityChange}
+              disabled={noStock}
+            />
+            <StepButton
+              type="button"
+              aria-label={`increase ${item_name} quantity`}
+              disabled={noStock || quantity >= available_pt}
+              onClick={() =>
+                handleQuantityChange({ target: { value: quantity + 1 } })
+              }
+            >
+              +
+            </StepButton>
+          </Stepper>
+        </Field>
+        <Field>
+          <label htmlFor={`discount-${id}`}>Discount / pt (Rs)</label>
           <Input
             type="text"
-            id="discountPerPt"
+            inputMode="decimal"
+            id={`discount-${id}`}
             value={discountPerPt}
             onChange={handleDiscountChange}
-            disabled={available_pt <= 0}
+            disabled={noStock}
           />
-        </div>
-      </Stacked1>
+        </Field>
+      </Controls>
 
-      <Stacked2>
-        <Checkbox
-          id="scheme1"
-          checked={addScheme1}
-          onChange={handleAddScheme1Change}
-        >
-          Scm1
-        </Checkbox>
-        <Checkbox
-          id="scheme2"
-          checked={addScheme2}
-          onChange={handleAddScheme2Change}
-        >
-          Scm2
-        </Checkbox>
-        <Checkbox
-          id="scheme3"
-          checked={addScheme3}
-          onChange={handleAddScheme3Change}
-        >
-          Scm3
-        </Checkbox>
-        {/* {(addScheme1 || addScheme2) && <span>{freeItemsString}</span>} */}
-      </Stacked2>
-      <Stacked2>
-        {(addScheme1 || addScheme2) && <span>{freeItemsString}</span>}
-      </Stacked2>
-    </FormRow>
+      <Pills>
+        {schemes.map(({ n, active, onChange }) => (
+          <Pill
+            key={n}
+            type="button"
+            $active={active}
+            disabled={noStock}
+            onClick={() => onChange({ target: { checked: !active } })}
+          >
+            Scheme {n}
+          </Pill>
+        ))}
+      </Pills>
+      {(addScheme1 || addScheme2 || addScheme3) && quantity > 0 && (
+        <SchemeNote>
+          {freeText && freeItemsString !== "No scheme"
+            ? `Free: ${freeText}`
+            : "No scheme for this quantity"}
+        </SchemeNote>
+      )}
+    </Card>
   );
 }
 

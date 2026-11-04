@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { add } from "date-fns";
+import { add, format } from "date-fns";
 import { useForm } from "react-hook-form";
 
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import FormRow from "../../ui/FormRow";
 import Heading from "../../ui/Heading";
 import Spinner from "../../ui/Spinner";
-import Select from "../../ui/Select";
 import styled from "styled-components";
 import CreateOrderItem from "./CreateOrderItem";
 
@@ -16,7 +14,6 @@ import { useStock } from "../stock/useStock";
 import { useAddOrder } from "./useAddOrder";
 import Input from "../../ui/Input";
 import toast from "react-hot-toast";
-import { useIsAdmin } from "../authentication/useIsAdmin";
 
 function fromToday(numDays, withTime = false) {
   const date = add(new Date(), { days: numDays });
@@ -24,11 +21,129 @@ function fromToday(numDays, withTime = false) {
   return date.toISOString().slice(0, -1);
 }
 
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding: 0 1rem 1rem;
+`;
+
+const Section = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const SectionTitle = styled.h5`
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-grey-500);
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+
+  & > label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-grey-500);
+  }
+
+  & > small {
+    font-size: 1.1rem;
+    color: var(--color-grey-500);
+  }
+
+  & input,
+  & select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .dark-mode & input[type="date"],
+  .dark-mode & input[type="time"] {
+    color-scheme: dark;
+  }
+`;
+
+const StoreList = styled.ul`
+  max-height: 20rem;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--color-grey-300);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-grey-0);
+
+  & li {
+    padding: 0.9rem 1.2rem;
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+
+  & li:not(:last-child) {
+    border-bottom: 1px solid var(--color-grey-100);
+  }
+
+  & li[data-selected="true"] {
+    font-weight: 600;
+    color: var(--color-brand-600);
+  }
+`;
+
+const Footer = styled.div`
+  position: sticky;
+  bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 1.2rem 0.6rem;
+  padding: 1rem;
+  background-color: var(--color-grey-0);
+  border: 1px solid var(--color-grey-300);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+`;
+
+const Summary = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  font-size: 1.1rem;
+  color: var(--color-grey-500);
+
+  & strong {
+    display: block;
+    font-size: 1.4rem;
+    color: var(--color-grey-700);
+  }
+
+  & div:last-child strong {
+    color: var(--color-brand-600);
+  }
+`;
+
 const StackedButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
 `;
+
+// order_date is stored as a UTC ISO string; the form edits it in local time
+function toOrderDate(date, time) {
+  return new Date(`${date}T${time}`).toISOString().slice(0, -1);
+}
 const order_template = {
   customer_id: 1,
   order_date: fromToday(0),
@@ -80,6 +195,8 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     customer_id: Number(store_id),
   });
   const [orderDate, setOrderDate] = useState(fromToday(0));
+  const [storeSearch, setStoreSearch] = useState("");
+  const [isStoreListOpen, setIsStoreListOpen] = useState(false);
   const [extraFree500ml, setExtraFree500ml] = useState(0);
   const [extraFree1ltr, setExtraFree1ltr] = useState(0);
   const [extraDiscount, setExtraDiscount] = useState(0);
@@ -94,7 +211,6 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
   const { isLoadingCustomers, customers } = useCustomers();
   const { isLoadingStock, stock } = useStock();
   const { addOrder, isAddingOrder } = useAddOrder();
-  const { isAdmin } = useIsAdmin();
 
   // useEffect to calculate and update available pcs for 500ml and 1ltr whenever newOrder or stock changes
   useEffect(() => {
@@ -144,10 +260,38 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     setNewOrder({ ...newOrder, customer_id: Number(event.target.value) });
   };
 
-  const handleOrderDateChange = (event) => {
-    setOrderDate(event.target.value);
-    setNewOrder({ ...newOrder, order_date: event.target.value });
+  const localOrderDate = new Date(`${orderDate}Z`);
+  const orderDay = format(localOrderDate, "yyyy-MM-dd");
+  const orderTime = format(localOrderDate, "HH:mm");
+
+  const handleOrderDateChange = (day, time) => {
+    if (!day || !time) return;
+    const value = toOrderDate(day, time);
+    setOrderDate(value);
+    setNewOrder({ ...newOrder, order_date: value });
   };
+
+  // live totals for the summary bar (display only)
+  const orderedItems = newOrder.order_items.filter((i) => i.item_id !== 0);
+  const totalPt = orderedItems.reduce((t, i) => t + i.item_quantity, 0);
+  const itemsValue = orderedItems.reduce(
+    (t, i) => t + i.selling_price * i.item_quantity,
+    0,
+  );
+  const itemDiscount = orderedItems.reduce((t, i) => t + (i.discount || 0), 0);
+  const freePcs =
+    orderedItems.reduce(
+      (t, i) =>
+        t +
+        (i.free_items || []).reduce(
+          (f, free) => f + Number(free.free_item_quantity || 0),
+          0,
+        ),
+      0,
+    ) +
+    extraFree500ml +
+    extraFree1ltr;
+  const billValue = itemsValue - itemDiscount - extraDiscount;
 
   function handleExtra500mlChange(e) {
     const newQ = Number(e.target.value);
@@ -231,14 +375,14 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
       (total, item) => {
         return total + item.selling_price * item.item_quantity;
       },
-      0
+      0,
     );
 
     const totalBuyingPriceOrderItems = order.order_items.reduce(
       (total, item) => {
         return total + item.buying_price * item.item_quantity;
       },
-      0
+      0,
     );
 
     const totalBuyingPriceFreeItems = order.order_items.reduce(
@@ -250,7 +394,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
           }, 0)
         );
       },
-      0
+      0,
     );
 
     let modifiedOrder = order;
@@ -262,7 +406,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
     modifiedOrder.effective_total_selling_price = totalSellingPriceOrderItems;
     modifiedOrder.total_discount = totalDiscount;
     modifiedOrder.bill_value = Number(
-      (totalSellingPriceOrderItems - totalDiscount).toFixed(2)
+      (totalSellingPriceOrderItems - totalDiscount).toFixed(2),
     );
     modifiedOrder.profit = Number(
       (
@@ -271,7 +415,7 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
         totalBuyingPriceFreeItems -
         totalDiscount -
         extraCosts
-      ).toFixed(2)
+      ).toFixed(2),
     );
     return modifiedOrder;
   }
@@ -299,74 +443,161 @@ function CreateOrderForm({ onCloseModal, store_id = "1" }) {
 
   // create a useeffect to calculate and update available 500ml and 1ltr pcs when newOrder achnges
 
+  const selectedStoreName =
+    customers.find((c) => String(c.id) === String(selectedStoreId))
+      ?.store_name || "";
+  const matchingStores = customers.filter((customer) =>
+    customer.store_name.toLowerCase().includes(storeSearch.toLowerCase()),
+  );
+
+  function selectStore(id) {
+    handleStoreChange({ target: { value: id } });
+    setIsStoreListOpen(false);
+  }
+
   return (
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
-      <FormRow>
+      <Body>
         <Heading as="h4">Create new order</Heading>
-      </FormRow>
-      <FormRow label="Store name">
-        <Select
-          options={customers.map((customer) => ({
-            value: customer.id,
-            label: customer.store_name,
-          }))}
-          value={selectedStoreId}
-          onChange={handleStoreChange}
-          type="white"
-        />
-      </FormRow>
 
-      <FormRow label={"Order date"}>
-        <Input
-          type="text"
-          value={orderDate}
-          onChange={(e) => handleOrderDateChange(e)}
-          disabled={!isAdmin}
-        />
-      </FormRow>
+        <Section>
+          <SectionTitle>Customer</SectionTitle>
+          <Field>
+            <label htmlFor="storeSearch">Store name</label>
+            <Input
+              id="storeSearch"
+              type="text"
+              autoComplete="off"
+              placeholder="Search store..."
+              value={isStoreListOpen ? storeSearch : selectedStoreName}
+              onFocus={() => {
+                setStoreSearch("");
+                setIsStoreListOpen(true);
+              }}
+              onBlur={() => setIsStoreListOpen(false)}
+              onChange={(e) => setStoreSearch(e.target.value)}
+            />
+            {isStoreListOpen && (
+              <StoreList>
+                {matchingStores.length === 0 && <li>No store found</li>}
+                {matchingStores.map((customer) => (
+                  <li
+                    key={customer.id}
+                    // mousedown (not click) so the input's blur doesn't close the list first
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      selectStore(customer.id);
+                    }}
+                    data-selected={
+                      String(customer.id) === String(selectedStoreId)
+                    }
+                  >
+                    {customer.store_name}
+                  </li>
+                ))}
+              </StoreList>
+            )}
+          </Field>
+          <Grid>
+            <Field>
+              <label htmlFor="orderDay">Order date</label>
+              <Input
+                id="orderDay"
+                type="date"
+                value={orderDay}
+                onChange={(e) =>
+                  handleOrderDateChange(e.target.value, orderTime)
+                }
+              />
+            </Field>
+            <Field>
+              <label htmlFor="orderTime">Order time</label>
+              <Input
+                id="orderTime"
+                type="time"
+                value={orderTime}
+                onChange={(e) =>
+                  handleOrderDateChange(orderDay, e.target.value)
+                }
+              />
+            </Field>
+          </Grid>
+        </Section>
 
-      {stock.map((item) => (
-        <CreateOrderItem
-          key={item.id}
-          item={item}
-          newOrder={newOrder}
-          setNewOrder={setNewOrder}
-        />
-      ))}
+        <Section>
+          <SectionTitle>Items</SectionTitle>
+          {stock.map((item) => (
+            <CreateOrderItem
+              key={item.id}
+              item={item}
+              newOrder={newOrder}
+              setNewOrder={setNewOrder}
+            />
+          ))}
+        </Section>
 
-      <FormRow label={`extra free 500ml - avl(${availablePcs500ml})`}>
-        <Input
-          type="number"
-          value={extraFree500ml}
-          onChange={(e) => handleExtra500mlChange(e)}
-          disabled={availablePcs500ml <= 0}
-        />
-      </FormRow>
-      <FormRow label={`extra free 1ltr - avl(${availablePcs1ltr})`}>
-        <Input
-          type="number"
-          value={extraFree1ltr}
-          onChange={(e) => handleExtra1ltrChange(e)}
-          disabled={availablePcs1ltr <= 0}
-        />
-      </FormRow>
-      <FormRow label="extra discount">
-        <Input
-          type="number"
-          value={extraDiscount}
-          onChange={(e) => setExtraDiscount(Number(e.target.value))}
-        />
-      </FormRow>
+        <Section>
+          <SectionTitle>Extras</SectionTitle>
+          <Grid>
+            <Field>
+              <label htmlFor="extraFree500">Extra free 500ml (pcs)</label>
+              <Input
+                id="extraFree500"
+                type="number"
+                value={extraFree500ml}
+                onChange={(e) => handleExtra500mlChange(e)}
+                disabled={availablePcs500ml <= 0}
+              />
+              <small>{availablePcs500ml} pcs available</small>
+            </Field>
+            <Field>
+              <label htmlFor="extraFree1ltr">Extra free 1ltr (pcs)</label>
+              <Input
+                id="extraFree1ltr"
+                type="number"
+                value={extraFree1ltr}
+                onChange={(e) => handleExtra1ltrChange(e)}
+                disabled={availablePcs1ltr <= 0}
+              />
+              <small>{availablePcs1ltr} pcs available</small>
+            </Field>
+          </Grid>
+          <Field>
+            <label htmlFor="extraDiscount">Extra discount (Rs)</label>
+            <Input
+              id="extraDiscount"
+              type="number"
+              value={extraDiscount}
+              onChange={(e) => setExtraDiscount(Number(e.target.value))}
+            />
+          </Field>
+        </Section>
+      </Body>
 
-      <FormRow>
-        {/* type is an HTML attribute! */}
+      <Footer>
+        <Summary>
+          <div>
+            Items
+            <strong>{totalPt} pt</strong>
+          </div>
+          <div>
+            Free / discount
+            <strong>
+              {freePcs} pcs · Rs.{(itemDiscount + extraDiscount).toFixed(0)}
+            </strong>
+          </div>
+          <div>
+            Bill value
+            <strong>Rs.{billValue.toFixed(2)}</strong>
+          </div>
+        </Summary>
         <StackedButtons>
           <Button variation="secondary" type="reset" onClick={handleCloseForm}>
             Cancel
           </Button>
           <Button>Add</Button>
         </StackedButtons>
-      </FormRow>
+      </Footer>
     </Form>
   );
 }

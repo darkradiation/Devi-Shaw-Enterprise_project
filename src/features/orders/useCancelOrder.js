@@ -40,7 +40,7 @@ export function useCancelOrder() {
             let { pt: availablePt, pcs: availablePcs } =
               stockItem.available_stock;
             if (
-              availablePcs + free_item.free_item_quantity >
+              availablePcs + free_item.free_item_quantity >=
               stockItem.quantity_per_pt
             ) {
               availablePt += 1;
